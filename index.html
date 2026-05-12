@@ -2,170 +2,181 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Kriminal Analiz Ünitesi v5.0</title>
+    <title>Kriminal Analiz Ünitesi</title>
     <style>
-        body {
-            background-color: #050505;
-            color: #e0e0e0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
+        body { 
+            background-color: #050505; 
+            color: #e0e0e0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            padding: 20px; 
+            user-select: none; 
+            margin: 0; 
         }
-        .container {
-            width: 900px;
-            background: #0f0f0f;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.8);
+        .container { 
+            width: 900px; 
+            background: #0f0f0f; 
+            border: 1px solid #333; 
+            border-radius: 8px; 
+            padding: 25px; 
+            box-shadow: 0 10px 50px rgba(0,0,0,0.8); 
         }
-        .header {
-            text-align: center;
-            border-bottom: 1px solid #222;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
+        .header { 
+            text-align: center; 
+            border-bottom: 1px dashed #333; 
+            padding-bottom: 15px; 
+            margin-bottom: 20px; 
         }
-        h1 {
-            color: #a30000;
-            margin: 0;
-            text-transform: uppercase;
-            letter-spacing: 3px;
+        h1 { 
+            color: #a30000; 
+            margin: 0 0 10px 0; 
+            text-transform: uppercase; 
+            letter-spacing: 3px; 
         }
-        .main-ui {
-            display: flex;
-            gap: 25px;
+        p.desc { 
+            color: #888; 
+            font-size: 14px; 
+            margin: 0; 
+            padding: 0 20px; 
+            line-height: 1.5; 
         }
-        .display-area {
-            flex: 1.2;
-            background: #000;
-            border: 2px solid #1a1a1a;
-            height: 450px;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
+        .main-ui { 
+            display: flex; 
+            gap: 25px; 
         }
-        #canvas-filter {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: filter 0.05s linear;
+        .display-area { 
+            flex: 1.2; 
+            background: #000; 
+            border: 2px solid #1a1a1a; 
+            height: 450px; 
+            position: relative; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden; 
         }
-        .blood-svg {
-            width: 280px;
-            height: 400px;
+        #canvas-filter { 
+            width: 100%; 
+            height: 100%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            transition: all 0.1s; 
+            filter: blur(15px) brightness(30%) contrast(50%); 
         }
-        /* Gizli numara başlangıçta soluk ve arkaplana yakın */
-        #number-42 {
-            font-family: 'Arial Black', sans-serif;
-            font-size: 100px;
-            fill: #4d0000; 
-            transition: fill 0.3s ease;
+        .blood-svg { 
+            width: 280px; 
+            height: 400px; 
         }
-        .sidebar {
-            flex: 0.8;
-            background: #151515;
-            padding: 20px;
-            border-radius: 5px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        #gizli-numara { 
+            font-family: 'Arial Black', sans-serif; 
+            font-size: 100px; 
+            fill: #ff0000; 
+            opacity: 0; 
+            transition: opacity 0.3s; 
         }
-        .control-block {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        .sidebar { 
+            flex: 0.8; 
+            background: #151515; 
+            padding: 20px; 
+            border-radius: 5px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
         }
-        label {
-            font-size: 13px;
-            color: #aaa;
-            text-transform: uppercase;
+        .control-block { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
         }
-        input[type=range] {
-            width: 100%;
-            cursor: pointer;
-            accent-color: #a30000;
+        label { 
+            font-size: 13px; 
+            color: #aaa; 
+            font-weight: bold; 
         }
-        #analyze-btn {
-            margin-top: auto;
-            padding: 15px;
-            background: #222;
-            color: #444;
-            border: 1px solid #333;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: not-allowed;
-            transition: all 0.3s;
+        input[type=range] { 
+            width: 100%; 
+            cursor: pointer; 
+            accent-color: #a30000; 
         }
-        #analyze-btn.active {
-            background: #a30000;
-            color: #fff;
-            border-color: #ff0000;
-            cursor: pointer;
-            box-shadow: 0 0 15px rgba(163, 0, 0, 0.6);
+        #analyze-btn { 
+            margin-top: auto; 
+            padding: 15px; 
+            background: #222; 
+            color: #555; 
+            border: 1px solid #333; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            cursor: not-allowed; 
+            transition: all 0.3s; 
         }
-        #status-bar {
-            margin-top: 20px;
-            background: #000;
-            padding: 15px;
-            text-align: center;
-            font-family: monospace;
-            border: 1px solid #222;
+        #analyze-btn.active { 
+            background: #a30000; 
+            color: #fff; 
+            border-color: #ff0000; 
+            cursor: pointer; 
+            box-shadow: 0 0 15px rgba(163, 0, 0, 0.6); 
         }
-        .success-text { color: #00ffcc; text-shadow: 0 0 5px #00ffcc; }
+        #status-bar { 
+            margin-top: 20px; 
+            background: #000; 
+            padding: 15px; 
+            text-align: center; 
+            font-family: monospace; 
+            border: 1px solid #222; 
+            font-size: 16px; 
+        }
+        .success-text { 
+            color: #00ffcc; 
+            text-shadow: 0 0 8px #00ffcc; 
+            font-weight: bold; 
+        }
     </style>
 </head>
 <body>
-
 <div class="container">
     <div class="header">
-        <h1>ADLİ GÖRÜNTÜ İŞLEME MERKEZİ</h1>
+        <h1>Kriminal İmaj Netleştirme</h1>
+        <p class="desc">Cinayet mahallindeki kan gölünden alınan ayak izi dijital korozyona uğramıştır. Doku detaylarını ortaya çıkarmak için yandaki spektrum çubuklarını kullanın. Görsel tamamen netleştiğinde analiz butonuna basarak sonucu sisteme kaydedin.</p>
     </div>
-
     <div class="main-ui">
         <div class="display-area">
             <div id="canvas-filter">
                 <svg class="blood-svg" viewBox="0 0 200 300">
                     <path d="M 40,20 C 10,40 5,100 20,140 L 45,210 C 45,280 115,290 115,210 L 140,140 C 160,100 150,40 120,20 Z" fill="#3a0000" />
-                    <path d="M 50,60 L 110,60" fill="none" stroke="#2a0000" stroke-width="5" stroke-dasharray="5,3"/>
-                    <path d="M 55,90 L 115,90" fill="none" stroke="#2a0000" stroke-width="5" stroke-dasharray="5,3"/>
-                    <text x="100" y="180" id="number-42" text-anchor="middle">42</text>
+                    <path d="M 50,60 L 110,60" fill="none" stroke="#1a0000" stroke-width="6" stroke-dasharray="5,3"/>
+                    <path d="M 55,90 L 115,90" fill="none" stroke="#1a0000" stroke-width="6" stroke-dasharray="5,3"/>
+                    <text x="100" y="180" id="gizli-numara" text-anchor="middle">42</text>
                 </svg>
             </div>
         </div>
-
         <div class="sidebar">
             <div class="control-block">
-                <label>IŞIK (EXPOSURE)</label>
-                <input type="range" id="light" min="20" max="250" value="30">
+                <label>Foton Işıması</label>
+                <input type="range" id="light" min="20" max="200" value="30">
             </div>
             <div class="control-block">
-                <label>ZITLIK (CONTRAST)</label>
-                <input type="range" id="contrast" min="50" max="300" value="70">
+                <label>Doku Zıtlığı</label>
+                <input type="range" id="contrast" min="50" max="300" value="50">
             </div>
             <div class="control-block">
-                <label>KESKİNLİK (SHARPEN)</label>
-                <input type="range" id="blur" min="0" max="15" value="12" step="0.1">
+                <label>Mikro Keskinlik</label>
+                <input type="range" id="blur" min="0" max="20" value="15" step="0.5">
             </div>
             <div class="control-block">
-                <label>GAMMA (DENSITY)</label>
-                <input type="range" id="gamma" min="0.5" max="3" value="0.8" step="0.1">
+                <label>Renk Doygunluğu</label>
+                <input type="range" id="gamma" min="0.5" max="3" value="0.5" step="0.1">
             </div>
-            <button id="analyze-btn">ANALİZİ BAŞLAT</button>
+            <button id="analyze-btn" disabled>ANALİZ İÇİN NETLİK BEKLENİYOR</button>
         </div>
     </div>
-
-    <div id="status-bar">SİSTEM HAZIR. LÜTFEN GÖRÜNTÜYÜ NETLEŞTİRİN.</div>
+    <div id="status-bar">SİSTEM HAZIR. KANLI İZİ TARAYIN.</div>
 </div>
 
 <script>
     const filterLayer = document.getElementById('canvas-filter');
-    const num42 = document.getElementById('number-42');
+    const numara = document.getElementById('gizli-numara');
     const btn = document.getElementById('analyze-btn');
     const status = document.getElementById('status-bar');
 
@@ -176,31 +187,25 @@
         gamma: document.getElementById('gamma')
     };
 
-    // Hedef Değerler (Zorluk seviyesi ayarlandı - Oyuncu zevk alsın diye makul aralıklar bırakıldı)
-    const targets = {
-        light: [140, 190],
-        contrast: [180, 250],
-        blur: [0, 1.5],
-        gamma: [1.5, 2.5]
-    };
+    // Kazanma Koşulları
+    const targets = { light: [120, 160], contrast: [180, 240], blur: [0, 2], gamma: [1.5, 2.2] };
 
     function update() {
-        const l = inputs.light.value;
-        const c = inputs.contrast.value;
-        const b = inputs.blur.value;
-        const g = inputs.gamma.value;
+        const l = parseFloat(inputs.light.value);
+        const c = parseFloat(inputs.contrast.value);
+        const b = parseFloat(inputs.blur.value);
+        const g = parseFloat(inputs.gamma.value);
 
-        // Görseli güncelle
-        filterLayer.style.filter = `brightness(${l}%) contrast(${c}%) blur(${b}px) opacity(${g/3})`;
-        
-        // Netlik arttıkça numaranın rengini aç (42 yavaş yavaş belirsin)
-        if (b < 5) {
-            num42.style.fill = "#ff0000";
-        } else {
-            num42.style.fill = "#4d0000";
+        // css filtrelerini anlık uygula
+        filterLayer.style.filter = `brightness(${l}%) contrast(${c}%) blur(${b}px) saturate(${g})`;
+
+        // Bulanıklık 5'in altına düştükçe ve ışık arttıkça rakam belirginleşir
+        let opacityLevel = 0;
+        if(b < 5 && l > 80) {
+            opacityLevel = (5 - b) / 5; 
         }
+        numara.style.opacity = opacityLevel;
 
-        // Kontrol
         const isOk = (l >= targets.light[0] && l <= targets.light[1]) &&
                      (c >= targets.contrast[0] && c <= targets.contrast[1]) &&
                      (b >= targets.blur[0] && b <= targets.blur[1]) &&
@@ -209,23 +214,36 @@
         if (isOk) {
             btn.classList.add('active');
             btn.disabled = false;
-            status.innerHTML = "<span class='success-text'>DOKU ANALİZİNE HAZIR! NUMARA TESPİT EDİLDİ.</span>";
+            btn.innerHTML = "ANALİZİ BAŞLAT";
+            status.innerHTML = "<span style='color:#ffaa00'>DOKU NETLEŞTİ. ONAY BEKLENİYOR.</span>";
         } else {
             btn.classList.remove('active');
             btn.disabled = true;
-            status.innerHTML = "GÖRÜNTÜ İŞLENİYOR... (" + (b > 2 ? "ODAK HATASI" : "DEĞERLERİ AYARLAYIN") + ")";
+            btn.innerHTML = "NETLİK BEKLENİYOR";
+            status.innerHTML = "GÖRÜNTÜ İŞLENİYOR...";
         }
     }
 
     Object.values(inputs).forEach(input => input.addEventListener('input', update));
 
     btn.onclick = () => {
-        status.innerHTML = "<span class='success-text'>ANALİZ TAMAMLANDI: OLAY YERİNDEKİ İZ 42 NUMARA OLARAK KAYDEDİLDİ.</span>";
-        btn.innerHTML = "ONAYLANDI";
-        btn.classList.remove('active');
-        Object.values(inputs).forEach(i => i.disabled = true);
+        if(!btn.disabled) {
+            status.innerHTML = "<span class='success-text'>VERİ ONAYLANDI: CİNAYET MAHALLİNDEKİ İZ 42 NUMARADIR.</span>";
+            btn.innerHTML = "KAYDEDİLDİ";
+            btn.classList.remove('active');
+            
+            // Oyuncu kazanınca rakam neon gibi parlar
+            numara.style.opacity = 1;
+            numara.style.textShadow = "0 0 20px #ff0000";
+            
+            // Çubuklar kilitlenir
+            Object.values(inputs).forEach(i => i.disabled = true);
+            btn.disabled = true;
+        }
     };
-</script>
 
+    // Sistemi başlat
+    update();
+</script>
 </body>
 </html>
