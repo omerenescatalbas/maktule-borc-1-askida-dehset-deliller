@@ -2,52 +2,140 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Kriminal İmaj Analizi</title>
+    <title>Kumburgaz Emniyet - Adli Bilişim Lab</title>
     <style>
-        body { background: #050505; color: #eee; font-family: 'Courier New', monospace; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .container { width: 950px; background: #0d0d0d; border: 1px solid #333; padding: 30px; box-shadow: 0 0 50px #000; border-radius: 4px; }
-        .header { text-align: center; border-bottom: 2px solid #600; padding-bottom: 20px; margin-bottom: 30px; }
-        h1 { color: #f00; margin: 0; letter-spacing: 6px; text-transform: uppercase; font-weight: 900; }
-        .desc { color: #888; font-size: 14px; margin-top: 10px; line-height: 1.5; border-left: 3px solid #600; padding-left: 15px; }
-        .main-ui { display: flex; gap: 40px; }
-        .display-area { flex: 1.5; background: #000; height: 500px; border: 2px solid #222; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 0 100px #000; }
-        #canvas-filter { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; transition: filter 0.05s linear; }
+        body { 
+            background: #050505; 
+            color: #ccc; 
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
+        .container { 
+            width: 900px; 
+            max-height: 95vh; 
+            background: #0d0d0d; 
+            border: 1px solid #333; 
+            padding: 20px; 
+            box-shadow: 0 0 50px #000; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .header { 
+            text-align: center; 
+            border-bottom: 2px solid #500; 
+            padding-bottom: 10px; 
+            margin-bottom: 15px; 
+        }
+        h1 { 
+            color: #b00; 
+            margin: 0; 
+            letter-spacing: 4px; 
+            font-size: 22px; 
+            text-transform: uppercase; 
+        }
+        .desc { 
+            color: #777; 
+            font-size: 13px; 
+            margin: 10px 0; 
+            line-height: 1.4; 
+            font-style: italic; 
+        }
+        .main-ui { 
+            display: flex; 
+            gap: 20px; 
+            flex: 1; 
+            min-height: 0; 
+        }
+        .display-area { 
+            flex: 1.3; 
+            background: #000; 
+            border: 1px solid #222; 
+            position: relative; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden; 
+        }
+        #canvas-filter { 
+            width: 100%; 
+            height: 100%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            transition: filter 0.05s; 
+        }
+        /* GERÇEKÇİ BOT TABANI SİLUETİ */
+        .shoe-svg { width: 180px; height: 380px; fill: #2a0000; }
+        #gizli-veri { 
+            font-family: 'Impact', sans-serif; 
+            font-size: 85px; 
+            fill: #f00; 
+            opacity: 0; 
+            transition: opacity 0.4s; 
+        }
+        .sidebar { 
+            flex: 0.7; 
+            background: #141414; 
+            padding: 15px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            border-left: 1px solid #333; 
+        }
+        .control-group { display: flex; flex-direction: column; gap: 5px; }
+        label { font-size: 11px; color: #999; font-weight: bold; letter-spacing: 1px; }
+        input[type=range] { width: 100%; accent-color: #900; cursor: pointer; }
         
-        /* GERÇEKÇİ BOT TABANI ÇİZİMİ */
-        .shoe-trace { width: 200px; height: 400px; fill: #300; }
-        #gizli-42 { font-family: 'Arial Black', sans-serif; font-size: 100px; fill: #f00; opacity: 0; transition: opacity 0.5s; }
+        #analyze-btn { 
+            padding: 15px; 
+            background: #200; 
+            color: #f66; 
+            border: 1px solid #f00; 
+            font-weight: bold; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            margin-top: auto; 
+        }
+        #analyze-btn:hover { background: #f00; color: #000; box-shadow: 0 0 15px #f00; }
         
-        .controls { flex: 0.8; background: #151515; padding: 25px; border: 1px solid #333; display: flex; flex-direction: column; gap: 20px; }
-        label { font-size: 11px; color: #ff4444; font-weight: bold; letter-spacing: 2px; }
-        input[type=range] { width: 100%; accent-color: #f00; cursor: pointer; height: 8px; }
-        
-        #analyze-btn { padding: 20px; background: #200; color: #f99; border: 1px solid #f00; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; margin-top: 10px; }
-        #analyze-btn:hover { background: #f00; color: #000; box-shadow: 0 0 25px #f00; }
-        
-        #status-bar { margin-top: 30px; background: #000; padding: 20px; border: 1px solid #222; text-align: center; font-weight: bold; font-family: monospace; font-size: 16px; min-height: 20px; }
-        .success { color: #0f0; text-shadow: 0 0 15px #0f0; }
-        .fail { color: #f33; text-shadow: 0 0 15px #f00; }
+        #status-bar { 
+            margin-top: 15px; 
+            background: #000; 
+            padding: 12px; 
+            border: 1px solid #222; 
+            text-align: center; 
+            font-family: monospace; 
+            font-size: 14px; 
+        }
+        .success { color: #0f0; text-shadow: 0 0 10px #0f0; }
+        .fail { color: #f33; text-shadow: 0 0 10px #f00; }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <h1>ADLİ İMAJ RESTORASYONU</h1>
-        <p class="desc">DİKKAT: Kan gölündeki delil yüksek oranda pıhtılaşmış ve korozyona uğramıştır. Dijital filtreleri kullanarak doku netliğini sağlayın. 42 rakamı okunur hale geldiğinde analizi resmileştirin.</p>
+        <h1>OLAY YERİ İNCELEME AYAKKABI İZİ ANALİZİ</h1>
+        <p class="desc">DİKKAT: Kan gölünden alınan dijital numune yüksek oranda parazit içermektedir. Tanımlayıcı verileri (ID) ortaya çıkarmak için adli görüntü iyileştirme parametrelerini senkronize edin. Görsel kanıt netleştiğinde sisteme kaydedin.</p>
     </div>
     <div class="main-ui">
         <div class="display-area">
             <div id="canvas-filter">
-                <svg class="shoe-trace" viewBox="0 0 100 200">
-                    <path d="M 50,10 C 25,10 20,40 20,60 C 20,90 40,105 40,130 C 40,150 35,160 35,185 C 45,195 55,195 65,185 C 65,160 60,150 60,130 C 60,105 80,90 80,60 C 80,40 75,10 50,10 Z" />
-                    <g fill="none" stroke="#100" stroke-width="4">
-                        <path d="M 25,40 H 75 M 22,60 H 78 M 25,85 H 75 M 42,145 H 58 M 40,170 H 60" />
+                <svg class="shoe-svg" viewBox="0 0 100 200">
+                    <path d="M 50,10 C 25,10 18,35 18,55 C 18,85 38,100 38,125 C 38,145 32,155 32,185 C 42,195 58,195 68,185 C 68,155 62,145 62,125 C 62,100 82,85 82,55 C 82,35 75,10 50,10 Z" />
+                    <g fill="none" stroke="#120000" stroke-width="4">
+                        <path d="M 25,35 H 75 M 22,55 H 78 M 25,80 H 75 M 40,140 H 60 M 38,165 H 62" />
                     </g>
-                    <text x="50" y="100" id="gizli-42" text-anchor="middle">42</text>
+                    <text x="50" y="95" id="gizli-veri" text-anchor="middle">42</text>
                 </svg>
             </div>
         </div>
-        <div class="controls">
+        <div class="sidebar">
             <div class="control-group">
                 <label>IŞIK GÜCÜ (LUMINANCE)</label>
                 <input type="range" id="l" min="20" max="250" value="40">
@@ -57,7 +145,7 @@
                 <input type="range" id="c" min="50" max="300" value="60">
             </div>
             <div class="control-group">
-                <label>ODAK NETLİĞİ (FOCUS)</label>
+                <label>ODAKLAMA (FOCUS)</label>
                 <input type="range" id="b" min="0" max="20" value="16" step="0.5">
             </div>
             <div class="control-group">
@@ -67,12 +155,12 @@
             <button id="analyze-btn" onclick="checkFinal()">ANALİZİ ONAYLA</button>
         </div>
     </div>
-    <div id="status-bar">SİNYAL BEKLENİYOR...</div>
+    <div id="status-bar">SİSTEM ANALİZ İÇİN KOMUT BEKLİYOR...</div>
 </div>
 
 <script>
     const filterLayer = document.getElementById('canvas-filter');
-    const numara = document.getElementById('gizli-42');
+    const numara = document.getElementById('gizli-veri');
     const status = document.getElementById('status-bar');
     const sliders = document.querySelectorAll('input');
 
@@ -84,7 +172,6 @@
 
         filterLayer.style.filter = `brightness(${l}%) contrast(${c}%) blur(${b}px) saturate(${s})`;
 
-        // OYUNCU 42'Yİ GÖRMEYE BAŞLASIN
         let opacity = 0;
         if(b < 7) opacity = (7 - b) / 7;
         if(l < 80) opacity = 0;
@@ -99,22 +186,22 @@
         const b = document.getElementById('b').value;
         const s = document.getElementById('s').value;
 
-        // KAZANMA KOŞULLARINI GENİŞLETTİM: OYUNCU GÖRÜYORSA KAZANIR
+        // SEVDİĞİN VE ÇALIŞAN KODU KORUDUM
         const isLightOk = (l > 110);
         const isContrastOk = (c > 130);
         const isBlurOk = (b < 4);
         const isSatOk = (s > 1.2);
 
         if(isLightOk && isContrastOk && isBlurOk && isSatOk) {
-            status.innerHTML = "<span class='success'>ANALİZ TAMAMLANDI: AYAKKABI ÖLÇÜSÜ 42 OLARAK TESPİT EDİLDİ!</span>";
+            status.innerHTML = "<span class='success'>ANALİZ BAŞARILI: VERİLER SİSTEME KAYDEDİLDİ.</span>";
             numara.style.opacity = 1;
             numara.style.fill = "#0f0";
-            numara.style.textShadow = "0 0 20px #0f0";
+            numara.style.textShadow = "0 0 15px #0f0";
             document.getElementById('analyze-btn').innerHTML = "ONAYLANDI";
             document.getElementById('analyze-btn').disabled = true;
             sliders.forEach(sl => sl.disabled = true);
         } else {
-            status.innerHTML = "<span class='fail'>HATA: VERİ OKUNAMIYOR. GÖRSELİ NETLEŞTİRİN!</span>";
+            status.innerHTML = "<span class='fail'>HATA: GÖRSEL VERİ TANIMLANAMADI!</span>";
         }
     }
     update();
