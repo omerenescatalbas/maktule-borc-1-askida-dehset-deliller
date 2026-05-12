@@ -2,324 +2,230 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Bilişim Şube - İmaj Netleştirme v4.0</title>
+    <title>Kriminal Analiz Ünitesi v5.0</title>
     <style>
         body {
-            background-color: #030303;
-            color: #d4d4d4;
-            font-family: 'Courier New', Courier, monospace;
+            background-color: #050505;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
-            user-select: none;
         }
         .container {
-            width: 950px;
-            background: #0a0a0a;
+            width: 900px;
+            background: #0f0f0f;
             border: 1px solid #333;
-            box-shadow: 0 0 35px rgba(139, 0, 0, 0.3);
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.8);
         }
         .header {
-            border-bottom: 2px dashed #444;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
             text-align: center;
+            border-bottom: 1px solid #222;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
         }
         h1 {
-            color: #b30000;
-            letter-spacing: 4px;
-            margin: 0 0 10px 0;
-            font-size: 26px;
-            text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(179, 0, 0, 0.5);
-        }
-        p {
-            color: #888;
-            font-size: 13px;
+            color: #a30000;
             margin: 0;
-            letter-spacing: 1px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
         }
-        .main-panel {
+        .main-ui {
             display: flex;
-            gap: 30px;
-            height: 450px;
+            gap: 25px;
         }
-        .image-viewer {
-            flex: 1;
-            background: repeating-linear-gradient(45deg, #0d0000, #0d0000 5px, #080000 5px, #080000 10px);
-            border: 2px solid #330000;
+        .display-area {
+            flex: 1.2;
+            background: #000;
+            border: 2px solid #1a1a1a;
+            height: 450px;
             position: relative;
-            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: inset 0 0 60px rgba(0,0,0,0.9);
+            overflow: hidden;
         }
-        /* Dinamik Filtre Katmanı */
-        #evidence-layer {
+        #canvas-filter {
             width: 100%;
             height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: filter 0.1s;
+            transition: filter 0.05s linear;
         }
-        .blood-stain {
-            width: 250px;
+        .blood-svg {
+            width: 280px;
             height: 400px;
         }
-        .controls {
-            width: 380px;
-            background: #0d0d0d;
-            border: 1px solid #222;
+        /* Gizli numara başlangıçta soluk ve arkaplana yakın */
+        #number-42 {
+            font-family: 'Arial Black', sans-serif;
+            font-size: 100px;
+            fill: #4d0000; 
+            transition: fill 0.3s ease;
+        }
+        .sidebar {
+            flex: 0.8;
+            background: #151515;
             padding: 20px;
+            border-radius: 5px;
             display: flex;
             flex-direction: column;
-            gap: 30px;
-            justify-content: center;
+            gap: 20px;
         }
-        .control-group {
+        .control-block {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
-        .control-group label {
+        label {
             font-size: 13px;
-            color: #999;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-        }
-        .val-display {
-            color: #ff3333;
-            font-family: monospace;
+            color: #aaa;
+            text-transform: uppercase;
         }
         input[type=range] {
-            -webkit-appearance: none;
             width: 100%;
-            background: #1a0000;
-            height: 8px;
-            border-radius: 4px;
-            outline: none;
-            border: 1px solid #440000;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 16px;
-            height: 24px;
-            background: #8b0000;
-            border: 1px solid #ff4444;
             cursor: pointer;
-            border-radius: 2px;
+            accent-color: #a30000;
         }
-        input[type=range]::-webkit-slider-thumb:active {
-            background: #ff0000;
-            box-shadow: 0 0 10px #ff0000;
-        }
-        button {
-            margin-top: 20px;
-            background: #2a0000;
-            color: #ff4444;
-            border: 1px solid #ff4444;
-            padding: 18px;
-            font-family: inherit;
-            font-weight: bold;
-            font-size: 16px;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        button:hover {
-            background: #ff2222;
-            color: #fff;
-            box-shadow: 0 0 20px rgba(255, 34, 34, 0.6);
-        }
-        button:disabled {
+        #analyze-btn {
+            margin-top: auto;
+            padding: 15px;
             background: #222;
-            color: #555;
-            border-color: #444;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-        #terminal {
-            margin-top: 25px;
-            background: #000;
-            border: 1px solid #330000;
-            padding: 20px;
-            font-size: 16px;
-            min-height: 25px;
-            text-align: center;
+            color: #444;
+            border: 1px solid #333;
             font-weight: bold;
-            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: not-allowed;
+            transition: all 0.3s;
         }
-        .error { color: #ff3333; text-shadow: 0 0 10px #ff0000; }
-        .success { color: #00ffcc; text-shadow: 0 0 10px #00ffcc; }
-        
-        /* Gizli 42 Rakamı Başlangıçta Tamamen Görünmez */
-        #hidden-number {
-            font-family: 'Impact', sans-serif;
-            font-size: 110px;
-            fill: #ff0000; 
-            opacity: 0; 
-            transition: opacity 1s, text-shadow 1s;
+        #analyze-btn.active {
+            background: #a30000;
+            color: #fff;
+            border-color: #ff0000;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(163, 0, 0, 0.6);
         }
-        
-        .scan-line {
-            position: absolute;
-            width: 100%;
-            height: 3px;
-            background: #ff0000;
-            box-shadow: 0 0 20px #ff0000;
-            top: 0;
-            left: 0;
-            display: none;
-            z-index: 10;
+        #status-bar {
+            margin-top: 20px;
+            background: #000;
+            padding: 15px;
+            text-align: center;
+            font-family: monospace;
+            border: 1px solid #222;
         }
+        .success-text { color: #00ffcc; text-shadow: 0 0 5px #00ffcc; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="header">
-            <h1>Kriminal İmaj Restorasyonu</h1>
-            <p>Kan gölü içindeki izin doku şifresini çözmek için Işık, Kontrast ve Keskinlik filtrelerini sekronize edin.</p>
-        </div>
-
-        <div class="main-panel">
-            <div class="image-viewer">
-                <div class="scan-line" id="scanner"></div>
-                
-                <div id="evidence-layer">
-                    <svg class="blood-stain" viewBox="0 0 200 300">
-                        <path d="M 40,20 C 10,40 5,100 20,140 L 45,210 C 45,280 115,290 115,210 L 140,140 C 160,100 150,40 120,20 C 105,10 85,20 85,20 C 85,20 70,10 40,20 Z" fill="#3a0000" />
-                        
-                        <path d="M 50,60 L 110,60" fill="none" stroke="#660000" stroke-width="8" stroke-dasharray="10,5"/>
-                        <path d="M 55,90 L 115,90" fill="none" stroke="#660000" stroke-width="8" stroke-dasharray="10,5"/>
-                        <path d="M 60,120 L 120,120" fill="none" stroke="#660000" stroke-width="8" stroke-dasharray="10,5"/>
-                        <path d="M 65,150 L 125,150" fill="none" stroke="#660000" stroke-width="8" stroke-dasharray="10,5"/>
-                        <path d="M 70,180 L 120,180" fill="none" stroke="#660000" stroke-width="8"/>
-                        
-                        <text x="95" y="180" id="hidden-number" text-anchor="middle">42</text>
-                    </svg>
-                </div>
-            </div>
-
-            <div class="controls">
-                <div class="control-group">
-                    <label>Foton Işıması (Parlaklık) <span class="val-display" id="val-light">0</span></label>
-                    <input type="range" id="slide-light" min="20" max="250" value="30">
-                </div>
-
-                <div class="control-group">
-                    <label>Doku Kontrastı <span class="val-display" id="val-contrast">0</span></label>
-                    <input type="range" id="slide-contrast" min="50" max="250" value="70">
-                </div>
-
-                <div class="control-group">
-                    <label>Mikro Keskinlik (Odak) <span class="val-display" id="val-blur">0</span></label>
-                    <input type="range" id="slide-blur" min="0" max="15" value="12">
-                </div>
-
-                <button id="btn-analyze" onclick="startScan()">ANALİZİ BAŞLAT</button>
-            </div>
-        </div>
-
-        <div id="terminal" style="color: #666;">FİLTRE DEĞERLERİ BEKLENİYOR...</div>
+<div class="container">
+    <div class="header">
+        <h1>ADLİ GÖRÜNTÜ İŞLEME MERKEZİ</h1>
     </div>
 
-    <script>
-        const layer = document.getElementById('evidence-layer');
-        const sLight = document.getElementById('slide-light');
-        const sContrast = document.getElementById('slide-contrast');
-        const sBlur = document.getElementById('slide-blur');
+    <div class="main-ui">
+        <div class="display-area">
+            <div id="canvas-filter">
+                <svg class="blood-svg" viewBox="0 0 200 300">
+                    <path d="M 40,20 C 10,40 5,100 20,140 L 45,210 C 45,280 115,290 115,210 L 140,140 C 160,100 150,40 120,20 Z" fill="#3a0000" />
+                    <path d="M 50,60 L 110,60" fill="none" stroke="#2a0000" stroke-width="5" stroke-dasharray="5,3"/>
+                    <path d="M 55,90 L 115,90" fill="none" stroke="#2a0000" stroke-width="5" stroke-dasharray="5,3"/>
+                    <text x="100" y="180" id="number-42" text-anchor="middle">42</text>
+                </svg>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="control-block">
+                <label>IŞIK (EXPOSURE)</label>
+                <input type="range" id="light" min="20" max="250" value="30">
+            </div>
+            <div class="control-block">
+                <label>ZITLIK (CONTRAST)</label>
+                <input type="range" id="contrast" min="50" max="300" value="70">
+            </div>
+            <div class="control-block">
+                <label>KESKİNLİK (SHARPEN)</label>
+                <input type="range" id="blur" min="0" max="15" value="12" step="0.1">
+            </div>
+            <div class="control-block">
+                <label>GAMMA (DENSITY)</label>
+                <input type="range" id="gamma" min="0.5" max="3" value="0.8" step="0.1">
+            </div>
+            <button id="analyze-btn">ANALİZİ BAŞLAT</button>
+        </div>
+    </div>
+
+    <div id="status-bar">SİSTEM HAZIR. LÜTFEN GÖRÜNTÜYÜ NETLEŞTİRİN.</div>
+</div>
+
+<script>
+    const filterLayer = document.getElementById('canvas-filter');
+    const num42 = document.getElementById('number-42');
+    const btn = document.getElementById('analyze-btn');
+    const status = document.getElementById('status-bar');
+
+    const inputs = {
+        light: document.getElementById('light'),
+        contrast: document.getElementById('contrast'),
+        blur: document.getElementById('blur'),
+        gamma: document.getElementById('gamma')
+    };
+
+    // Hedef Değerler (Zorluk seviyesi ayarlandı - Oyuncu zevk alsın diye makul aralıklar bırakıldı)
+    const targets = {
+        light: [140, 190],
+        contrast: [180, 250],
+        blur: [0, 1.5],
+        gamma: [1.5, 2.5]
+    };
+
+    function update() {
+        const l = inputs.light.value;
+        const c = inputs.contrast.value;
+        const b = inputs.blur.value;
+        const g = inputs.gamma.value;
+
+        // Görseli güncelle
+        filterLayer.style.filter = `brightness(${l}%) contrast(${c}%) blur(${b}px) opacity(${g/3})`;
         
-        const vLight = document.getElementById('val-light');
-        const vContrast = document.getElementById('val-contrast');
-        const vBlur = document.getElementById('val-blur');
-        
-        const terminal = document.getElementById('terminal');
-        const scanner = document.getElementById('scanner');
-        const btn = document.getElementById('btn-analyze');
-        const hiddenNumber = document.getElementById('hidden-number');
-
-        // KAZANMA KOŞULLARI (Oyuncu ayakkabı tırtıklarını görsel olarak en net hale getirdiğinde bu değerlere ulaşmış olacak)
-        const targetLightMin = 130, targetLightMax = 180;
-        const targetContrastMin = 130, targetContrastMax = 190;
-        const targetBlurMax = 2; // Neredeyse sıfır bulanıklık
-
-        function updateFilters() {
-            let b = sLight.value;
-            let c = sContrast.value;
-            let bl = sBlur.value;
-
-            // Ekrandaki şifreli yazılar (16'lık taban - hexadecimal görünüm)
-            vLight.innerText = "0x" + parseInt(b).toString(16).toUpperCase();
-            vContrast.innerText = "0x" + parseInt(c).toString(16).toUpperCase();
-            vBlur.innerText = "0x" + (15 - bl).toString(16).toUpperCase();
-
-            // Rengi bozmadan sadece ışık, zıtlık ve bulanıklık ayarı
-            layer.style.filter = `brightness(${b}%) contrast(${c}%) blur(${bl}px)`;
+        // Netlik arttıkça numaranın rengini aç (42 yavaş yavaş belirsin)
+        if (b < 5) {
+            num42.style.fill = "#ff0000";
+        } else {
+            num42.style.fill = "#4d0000";
         }
 
-        sLight.addEventListener('input', updateFilters);
-        sContrast.addEventListener('input', updateFilters);
-        sBlur.addEventListener('input', updateFilters);
+        // Kontrol
+        const isOk = (l >= targets.light[0] && l <= targets.light[1]) &&
+                     (c >= targets.contrast[0] && c <= targets.contrast[1]) &&
+                     (b >= targets.blur[0] && b <= targets.blur[1]) &&
+                     (g >= targets.gamma[0] && g <= targets.gamma[1]);
 
-        function startScan() {
+        if (isOk) {
+            btn.classList.add('active');
+            btn.disabled = false;
+            status.innerHTML = "<span class='success-text'>DOKU ANALİZİNE HAZIR! NUMARA TESPİT EDİLDİ.</span>";
+        } else {
+            btn.classList.remove('active');
             btn.disabled = true;
-            terminal.innerHTML = "KRİPTOLOJİK TARAMA YAPILIYOR...";
-            terminal.style.color = "#ffaa00";
-            
-            scanner.style.display = "block";
-            let pos = -10;
-            
-            let scanAnim = setInterval(() => {
-                pos += 15;
-                scanner.style.top = pos + "px";
-                
-                if(pos > 450) {
-                    clearInterval(scanAnim);
-                    scanner.style.display = "none";
-                    scanner.style.top = "-10px";
-                    evaluateImage();
-                }
-            }, 30);
+            status.innerHTML = "GÖRÜNTÜ İŞLENİYOR... (" + (b > 2 ? "ODAK HATASI" : "DEĞERLERİ AYARLAYIN") + ")";
         }
+    }
 
-        function evaluateImage() {
-            let b = parseInt(sLight.value);
-            let c = parseInt(sContrast.value);
-            let bl = parseInt(sBlur.value);
+    Object.values(inputs).forEach(input => input.addEventListener('input', update));
 
-            let isLightOk = (b >= targetLightMin && b <= targetLightMax);
-            let isContrastOk = (c >= targetContrastMin && c <= targetContrastMax);
-            let isBlurOk = (bl <= targetBlurMax);
+    btn.onclick = () => {
+        status.innerHTML = "<span class='success-text'>ANALİZ TAMAMLANDI: OLAY YERİNDEKİ İZ 42 NUMARA OLARAK KAYDEDİLDİ.</span>";
+        btn.innerHTML = "ONAYLANDI";
+        btn.classList.remove('active');
+        Object.values(inputs).forEach(i => i.disabled = true);
+    };
+</script>
 
-            if (isLightOk && isContrastOk && isBlurOk) {
-                // Şifre Çözüldü - Kan kırmızı parlayan dev 42!
-                hiddenNumber.style.opacity = "1";
-                hiddenNumber.style.textShadow = "0 0 20px #ff0000, 0 0 40px #ff0000";
-                
-                terminal.innerHTML = "DOKU ÇÖZÜNÜRLÜĞÜ %100.<br> KESİN EŞLEŞME: 42 NUMARA AYAK İZİ TESPİT EDİLDİ.";
-                terminal.className = "success";
-                
-                sLight.disabled = true;
-                sContrast.disabled = true;
-                sBlur.disabled = true;
-            } else {
-                // Şifre Yanlış
-                terminal.innerHTML = "SİNYAL KİRLİ. AYAKKABI TABAN DETAYLARI NET DEĞİL. DAHA HASSAS AYAR YAPINIZ.";
-                terminal.className = "error";
-                btn.disabled = false;
-            }
-        }
-
-        // Başlangıç durumu
-        updateFilters();
-    </script>
 </body>
 </html>
