@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kriminal Laboratuvar - Adım 1</title>
+    <style>
+        body { 
+            background-color: #050505; 
+            color: #d4d4d4; 
+            font-family: 'Courier New', Courier, monospace; 
+            text-align: center; 
+            margin: 0; 
+            padding: 20px; 
+            user-select: none;
+        }
+        .container { 
+            max-width: 650px; 
+            margin: 20px auto; 
+            border: 1px solid #222; 
+            padding: 30px; 
+            background: #0a0a0a;
+            box-shadow: 0 0 25px rgba(139, 0, 0, 0.15); 
+        }
+        h1 { 
+            color: #8b0000; 
+            letter-spacing: 3px; 
+            text-transform: uppercase; 
+            border-bottom: 1px dashed #333; 
+            padding-bottom: 15px; 
+            font-size: 24px;
+        }
+        p {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 30px;
+        }
+        .scanner-area { 
+            position: relative; 
+            width: 250px; 
+            height: 350px; 
+            margin: 0 auto; 
+            border: 1px solid #333; 
+            background: repeating-linear-gradient(
+                0deg,
+                #111,
+                #111 1px,
+                #0a0a0a 1px,
+                #0a0a0a 20px
+            ); 
+            overflow: hidden; 
+        }
+        .footprint { 
+            position: absolute; 
+            width: 120px; 
+            height: 240px; 
+            left: 50%; 
+            top: 50%; 
+            transform: translate(-50%, -50%); 
+            transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1); 
+        }
+        .crime-scene { 
+            stroke: #660000; 
+            stroke-width: 2; 
+            fill: rgba(139, 0, 0, 0.2); 
+            filter: drop-shadow(0 0 5px #8b0000);
+        }
+        .suspect-print { 
+            stroke: #00ffcc; 
+            stroke-width: 2; 
+            fill: rgba(0, 255, 204, 0.1); 
+            opacity: 0; 
+            transform: translate(-50%, -150%); 
+        }
+        .btn-group { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            margin-top: 40px; 
+        }
+        button { 
+            background: #151515; 
+            color: #bbb; 
+            border: 1px solid #444; 
+            padding: 15px; 
+            cursor: pointer; 
+            font-family: inherit; 
+            font-size: 15px; 
+            transition: 0.3s; 
+            letter-spacing: 1px;
+        }
+        button:hover { 
+            background: #222; 
+            border-color: #00ffcc; 
+            color: #fff;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+        }
+        #result-screen { 
+            margin-top: 25px; 
+            font-size: 18px; 
+            font-weight: bold; 
+            min-height: 30px; 
+            letter-spacing: 2px;
+        }
+        .match-fail { 
+            color: #ff3333; 
+            text-shadow: 0 0 8px #ff0000; 
+        }
+        .match-success { 
+            color: #00ffcc; 
+            text-shadow: 0 0 8px #00ffcc; 
+        }
+        .scan-line { 
+            position: absolute; 
+            width: 100%; 
+            height: 2px; 
+            background: #00ffcc; 
+            top: 0; 
+            left: 0; 
+            box-shadow: 0 0 15px #00ffcc; 
+            animation: scan 1.5s linear infinite; 
+            display: none; 
+            z-index: 10;
+        }
+        @keyframes scan { 
+            0% { top: 0; } 
+            100% { top: 100%; } 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kriminal Daire - Ayak İzi Analizi</h1>
+        <p>Soğuk hava deposundaki kan gölünden elde edilen 42 numara ana delil, şüpheli profillerinin kalıplarıyla dijital ortamda karşılaştırılacaktır.</p>
+        
+        <div class="scanner-area">
+            <div class="scan-line" id="scanner-line"></div>
+            
+            <svg class="footprint crime-scene" viewBox="0 0 100 200">
+                <path d="M 30,20 C 10,20 5,60 20,80 L 35,130 C 35,190 65,190 65,130 L 80,80 C 95,60 90,20 70,20 C 60,20 50,30 50,30 C 50,30 40,20 30,20 Z" />
+                <path d="M 35,50 Q 50,60 65,50" fill="none" stroke-width="3"/>
+                <path d="M 35,70 Q 50,80 65,70" fill="none" stroke-width="3"/>
+                <path d="M 40,110 Q 50,120 60,110" fill="none" stroke-width="3"/>
+                <path d="M 42,140 Q 50,150 58,140" fill="none" stroke-width="3"/>
+            </svg>
+
+            <svg class="footprint suspect-print" id="suspect-svg" viewBox="0 0 100 200">
+                <path d="M 30,20 C 10,20 5,60 20,80 L 35,130 C 35,190 65,190 65,130 L 80,80 C 95,60 90,20 70,20 C 60,20 50,30 50,30 C 50,30 40,20 30,20 Z" />
+                <path d="M 35,50 Q 50,60 65,50" fill="none" stroke-width="3"/>
+                <path d="M 35,70 Q 50,80 65,70" fill="none" stroke-width="3"/>
+                <path d="M 40,110 Q 50,120 60,110" fill="none" stroke-width="3"/>
+                <path d="M 42,140 Q 50,150 58,140" fill="none" stroke-width="3"/>
+            </svg>
+        </div>
+
+        <div id="result-screen">Taramayı Başlatınız...</div>
+
+        <div class="btn-group">
+            <button onclick="testPrint('Özgür', 0.88)">Çırak Özgür'ün Profilini Sına (40 Numara)</button>
+            <button onclick="testPrint('Melis', 0.80)">Melis Bilikçi'nin Profilini Sına (38 Numara)</button>
+            <button onclick="testPrint('Davut', 1.00)">Davut Bilikçi'nin Profilini Sına (42 Numara)</button>
+        </div>
+    </div>
+
+    <script>
+        function testPrint(suspect, scale) {
+            const overlay = document.getElementById('suspect-svg');
+            const result = document.getElementById('result-screen');
+            const scanner = document.getElementById('scanner-line');
+            const buttons = document.querySelectorAll('button');
+            
+            buttons.forEach(btn => btn.disabled = true);
+            
+            result.innerHTML = "SİSTEM VERİLERİ KARŞILAŞTIRIYOR...";
+            result.className = "";
+            result.style.color = "#bbb";
+            
+            overlay.style.opacity = "0";
+            overlay.style.transform = "translate(-50%, -150%) scale(" + scale + ")";
+            overlay.style.stroke = "#00ffcc";
+            
+            scanner.style.display = "block";
+
+            setTimeout(() => {
+                overlay.style.opacity = "0.85";
+                overlay.style.transform = "translate(-50%, -50%) scale(" + scale + ")";
+                
+                setTimeout(() => {
+                    scanner.style.display = "none";
+                    if(scale === 1.00) {
+                        result.innerHTML = "EŞLEŞME KESİNLEŞTİ - ŞÜPHELİ: " + suspect.toUpperCase();
+                        result.className = "match-success";
+                        overlay.style.stroke = "#00ffcc";
+                    } else {
+                        result.innerHTML = "TABAN ÇAPI UYUMSUZ - EŞLEŞME REDDEDİLDİ";
+                        result.className = "match-fail";
+                        overlay.style.stroke = "#ff3333";
+                    }
+                    buttons.forEach(btn => btn.disabled = false);
+                }, 1800);
+            }, 400);
+        }
+    </script>
+</body>
+</html>
