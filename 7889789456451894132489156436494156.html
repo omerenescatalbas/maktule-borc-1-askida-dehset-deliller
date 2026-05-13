@@ -1,1 +1,302 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SİBER SUÇLAR - NİHAİ ADLİ ANALİZ</title>
+    <style>
+        :root {
+            --bg-dark: #020508;
+            --bg-panel: #061118;
+            --border-cyan: #0088cc;
+            --text-cyan: #00d0ff;
+            --accent-green: #00ff44;
+            --accent-red: #ff0033;
+            --ridge-base: #1a4a5e;
+            --evidence-color: #00d0ff;
+        }
 
+        * { box-sizing: border-box; user-select: none; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #e0f7fa;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .header-box {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-cyan);
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 136, 204, 0.2);
+        }
+
+        .header-title {
+            color: var(--text-cyan);
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .module {
+            background: var(--bg-panel);
+            border: 1px solid rgba(0, 208, 255, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .module-header {
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            color: #88bbcc;
+            border-bottom: 1px solid rgba(0, 208, 255, 0.1);
+            padding-bottom: 5px;
+        }
+
+        .display-window {
+            width: 100%;
+            height: 240px;
+            background: #000;
+            border: 1px solid #0a2a35;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 0 40px #000;
+        }
+
+        .svg-canvas { position: absolute; width: 220px; height: 220px; transition: transform 0.05s linear; }
+
+        /* --- AYAKKABI --- */
+        #bloody-shoe { 
+            mix-blend-mode: screen; 
+            opacity: 0.8; 
+            filter: drop-shadow(0 0 5px var(--accent-red));
+            transform: translate(25px, -15px) rotate(8deg);
+        }
+
+        /* --- PARMAK İZİ --- */
+        .suspect-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+        }
+        .suspect-btn {
+            background: #02080d; border: 1px solid #1a4a5e; color: #888;
+            padding: 8px 2px; font-size: 9px; font-weight: bold; cursor: pointer;
+            border-radius: 2px;
+        }
+        .suspect-btn.active { background: #004466; border-color: var(--border-cyan); color: #fff; }
+        .suspect-btn.fail { border-color: var(--accent-red); color: var(--accent-red); }
+
+        #evidence-print { z-index: 5; filter: drop-shadow(0 0 4px var(--evidence-color)); opacity: 0.9; }
+        #suspect-print { z-index: 4; opacity: 0.45; }
+
+        /* --- KONTROLLER --- */
+        .controls {
+            background: rgba(0,0,0,0.4);
+            padding: 15px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .control-group { display: flex; flex-direction: column; gap: 5px; }
+        .control-label { display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; color: var(--text-cyan); text-transform: uppercase;}
+        
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; background: #0a2a35; border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { height: 26px; width: 26px; border-radius: 50%; background: var(--text-cyan); cursor: pointer; -webkit-appearance: none; margin-top: -10px; box-shadow: 0 0 12px var(--text-cyan);}
+
+        .btn-verify {
+            background: transparent; border: 1px solid var(--text-cyan); color: var(--text-cyan);
+            padding: 14px; font-size: 14px; font-weight: bold; cursor: pointer; text-transform: uppercase;
+            letter-spacing: 1px; margin-top: 5px;
+        }
+        .btn-verify:active { background: var(--text-cyan); color: #000; }
+
+        .status-msg { font-size: 11px; text-align: center; min-height: 14px; font-weight: bold; margin-top: 5px; }
+
+        /* FİNAL KAPANIŞ */
+        .final-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.99); z-index: 999; display: none;
+            flex-direction: column; justify-content: center; align-items: center; text-align: center;
+        }
+        .final-title { color: var(--accent-red); font-size: 36px; font-weight: bold; text-shadow: 0 0 20px var(--accent-red); margin-bottom: 20px; }
+        .final-sub { color: #fff; font-size: 18px; background: var(--accent-red); padding: 12px 30px; border-radius: 4px; box-shadow: 0 0 20px rgba(255,0,51,0.5); }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-box"><div class="header-title">KRİMİNALİSTİK DOĞRULAMA TERMİNALİ</div></div>
+
+    <!-- 1. AYAKKABI ANALİZİ -->
+    <div class="module" id="mod-shoe">
+        <div class="module-header"><span>BÖLÜM 1: TABAN İZİ EŞLEŞTİRME</span> <span id="shoe-ok">ANALİZ BEKLENİYOR</span></div>
+        <div class="display-window">
+            <svg id="clean-shoe" class="svg-canvas" viewBox="0 0 100 280">
+                <path d="M 35,10 C 15,10 10,70 15,100 C 20,130 28,150 30,170 C 32,190 22,210 22,250 C 22,280 78,280 78,250 C 78,210 68,190 70,170 C 72,150 80,130 85,100 C 90,70 85,10 65,10 Z" fill="#111" stroke="#333" stroke-width="2"/>
+                <g fill="none" stroke="#2a4a5e" stroke-width="4">
+                    <path d="M 30,30 L 70,70 M 70,30 L 30,70" /><path d="M 30,85 L 70,125 M 70,85 L 30,125" /><rect x="38" y="210" width="24" height="35" rx="4" />
+                </g>
+            </svg>
+            <svg id="bloody-shoe" class="svg-canvas" viewBox="0 0 100 280">
+                <path d="M 35,10 C 15,10 10,70 15,100 C 20,130 28,150 30,170 C 32,190 22,210 22,250 C 22,280 78,280 78,250 C 78,210 68,190 70,170 C 72,150 80,130 85,100 C 90,70 85,10 65,10 Z" fill="rgba(255,0,51,0.2)" stroke="var(--accent-red)" stroke-width="1.5"/>
+                <g fill="none" stroke="var(--accent-red)" stroke-width="3">
+                    <path d="M 30,30 L 70,70 M 70,30 L 30,70" /><path d="M 30,85 L 70,125 M 70,85 L 30,125" /><rect x="38" y="210" width="24" height="35" rx="4" />
+                </g>
+            </svg>
+        </div>
+        <div class="controls">
+            <div class="control-group"><div class="control-label">YATAY HİZALAMA</div><input type="range" id="sx" min="-40" max="40" value="25"></div>
+            <div class="control-group"><div class="control-label">DİKEY HİZALAMA</div><input type="range" id="sy" min="-40" max="40" value="-15"></div>
+            <div class="control-group"><div class="control-label">ROTASYON</div><input type="range" id="sr" min="-30" max="30" value="8"></div>
+        </div>
+    </div>
+
+    <!-- 2. PARMAK İZİ ANALİZİ -->
+    <div class="module" id="mod-fp">
+        <div class="module-header"><span>BÖLÜM 2: BIÇAKTAKİ BİYOMETRİK İZ</span> <span id="fp-ok">VERİ BEKLENİYOR</span></div>
+        <div class="suspect-selector">
+            <button class="suspect-btn active" id="btn-davut" onclick="switchSuspect('davut')">Davut BİLİKÇİ</button>
+            <button class="suspect-btn" id="btn-ozgur" onclick="switchSuspect('ozgur')">Özgür KALAS</button>
+            <button class="suspect-btn" id="btn-melis" onclick="switchSuspect('melis')">Melis BİLİKÇİ</button>
+        </div>
+        <div class="display-window">
+            <svg id="suspect-print" class="svg-canvas" viewBox="0 0 100 100"></svg>
+            <svg id="evidence-print" class="svg-canvas" viewBox="0 0 100 100" style="transform: translate(-15px, 20px);"></svg>
+        </div>
+        <div class="controls">
+            <div class="control-group"><div class="control-label">X-KOORDİNATI</div><input type="range" id="fx" min="-40" max="40" value="-15"></div>
+            <div class="control-group"><div class="control-label">Y-KOORDİNATI</div><input type="range" id="fy" min="-40" max="40" value="20"></div>
+            <button class="btn-verify" onclick="validateFingerprint()">EŞLEŞMEYİ ONAYLA</button>
+            <div class="status-msg" id="fp-msg"></div>
+        </div>
+    </div>
+</div>
+
+<div class="final-overlay" id="final-screen">
+    <div class="final-title">DOSYA KAPATILDI</div>
+    <div class="final-sub">SUÇLU: MELİS BİLİKÇİ</div>
+</div>
+
+<script>
+    // Gerçekçi Biyometrik Sarmal Üretimi (Tüm şüpheliler için benzer ama farklı minutiae)
+    function drawFingerprint(id, profile, color, isPartial = false) {
+        const svg = document.getElementById(id);
+        let paths = '';
+        const offset = profile === 'melis' ? 0 : (profile === 'davut' ? 1.5 : -1.5);
+        const stretch = profile === 'ozgur' ? 1.1 : 1.0;
+
+        for(let i=0; i<18; i++) {
+            const rX = (8 + i*3) * stretch;
+            const rY = (12 + i*4);
+            const dash = isPartial ? (i % 2 === 0 ? '20 10' : '10 15') : '';
+            // Karmaşık ilmek yapısı
+            paths += `<ellipse cx="${50 + offset}" cy="${60 - i}" rx="${rX}" ry="${rY}" fill="none" stroke="${color}" stroke-width="1.3" stroke-dasharray="${dash}" transform="rotate(${offset * i}, 50, 50)" />`;
+        }
+        // Rastgele doku bozuklukları (Minutiae simülasyonu)
+        paths += `<path d="M 45,30 Q 50,20 55,30" fill="none" stroke="${color}" stroke-width="1.5" />`;
+        svg.innerHTML = paths;
+    }
+
+    // 1. Ayakkabı Mantığı
+    const bShoe = document.getElementById('bloody-shoe'), sx = document.getElementById('sx'), sy = document.getElementById('sy'), sr = document.getElementById('sr');
+    let shoeSolved = false;
+
+    function updShoe() {
+        if(shoeSolved) return;
+        bShoe.style.transform = `translate(${sx.value}px, ${sy.value}px) rotate(${sr.value}deg)`;
+        if(Math.abs(sx.value) < 3 && Math.abs(sy.value) < 3 && Math.abs(sr.value) < 3) {
+            shoeSolved = true;
+            bShoe.style.transform = "translate(0,0) rotate(0)";
+            bShoe.setAttribute('stroke', 'var(--accent-green)');
+            document.getElementById('shoe-ok').innerHTML = "<span style='color:var(--accent-green)'>%99.9 UYUM</span>";
+            [sx,sy,sr].forEach(el => el.disabled = true);
+            checkCompletion();
+        }
+    }
+    [sx,sy,sr].forEach(el => el.addEventListener('input', updShoe));
+
+    // 2. Parmak İzi Mantığı
+    let currentSuspect = 'davut', fpSolved = false;
+    const evPrint = document.getElementById('evidence-print'), fx = document.getElementById('fx'), fy = document.getElementById('fy');
+
+    // Kanıt izini (Melis'in izinin kopyası) ve İlk Şüpheliyi çiz
+    drawFingerprint('evidence-print', 'melis', 'var(--evidence-color)', true);
+    drawFingerprint('suspect-print', 'davut', 'var(--ridge-base)', false);
+
+    function switchSuspect(s) {
+        if(fpSolved) return;
+        currentSuspect = s;
+        document.querySelectorAll('.suspect-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('btn-' + s).classList.add('active');
+        drawFingerprint('suspect-print', s, 'var(--ridge-base)', false);
+        document.getElementById('fp-msg').innerText = '';
+    }
+
+    function updFp() {
+        if(!fpSolved) evPrint.style.transform = `translate(${fx.value}px, ${fy.value}px)`;
+    }
+    [fx,fy].forEach(el => el.addEventListener('input', updFp));
+
+    function validateFingerprint() {
+        if(fpSolved) return;
+        const x = parseInt(fx.value), y = parseInt(fy.value);
+        
+        // Sadece Melis ve merkez koordinatlar (0,0) civarı eşleşir
+        if(currentSuspect === 'melis' && Math.abs(x) < 3 && Math.abs(y) < 3) {
+            fpSolved = true;
+            evPrint.style.transform = "translate(0,0)";
+            evPrint.style.opacity = "1";
+            document.getElementById('suspect-print').style.opacity = "1";
+            document.querySelectorAll('#mod-fp ellipse, #mod-fp path').forEach(p => p.setAttribute('stroke', 'var(--accent-green)'));
+            document.getElementById('fp-ok').innerHTML = "<span style='color:var(--accent-green)'>%100 DOĞRULANDI</span>";
+            [fx,fy].forEach(el => el.disabled = true);
+            checkCompletion();
+        } else {
+            const msg = document.getElementById('fp-msg');
+            msg.style.color = "var(--accent-red)";
+            if(currentSuspect !== 'melis') {
+                msg.innerText = "BİYOMETRİK RED: SARMAL YAPISI UYUMSUZ";
+                document.getElementById('btn-' + currentSuspect).classList.add('fail');
+            } else {
+                msg.innerText = "HATA: SIRTLAR ÇAKIŞMIYOR. LENSİ AYARLAYIN.";
+            }
+        }
+    }
+
+    function checkCompletion() {
+        if(shoeSolved && fpSolved) {
+            setTimeout(() => {
+                document.getElementById('final-screen').style.display = 'flex';
+            }, 1200);
+        }
+    }
+</script>
+
+</body>
+</html>
