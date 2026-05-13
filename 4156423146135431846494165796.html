@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asude Kayakçı - Cihaz İmajı v3.1</title>
+    <style>
+        :root {
+            --bg-dark: #000000;
+            --bg-panel: #1c1c1e;
+            --text-light: #ffffff;
+            --text-muted: #8e8e93;
+            --accent-blue: #0a84ff;
+            --accent-green: #34c759;
+            --accent-red: #ff453a;
+            --wa-bg: #0b141a;
+            --wa-msg-out: #005c4b;
+            --wa-msg-in: #202c33;
+            --wa-header: #1f2c34;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background-color: #050505;
+            color: var(--text-light);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* IPHONE FRAME */
+        .iphone-frame {
+            width: 375px;
+            height: 812px;
+            background: var(--bg-dark);
+            border-radius: 40px;
+            position: relative;
+            box-shadow: 0 0 0 12px #111, 0 0 0 14px #333, 0 0 30px rgba(0,0,0,0.8);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #000;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            z-index: 100;
+        }
+
+        .status-bar {
+            height: 44px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+            position: absolute;
+            top: 0;
+            z-index: 99;
+            color: #fff;
+        }
+
+        .status-right {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .home-indicator {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 130px;
+            height: 5px;
+            background: #fff;
+            border-radius: 10px;
+            z-index: 100;
+            cursor: pointer;
+            mix-blend-mode: difference;
+        }
+
+        /* VIEWS */
+        .view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s;
+            display: none;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .view.active {
+            display: flex;
+        }
+
+        /* LOCK SCREEN */
+        #view-lockscreen {
+            background: linear-gradient(to bottom, #141e30, #243b55);
+            align-items: center;
+            z-index: 60;
+        }
+
+        .lock-time { margin-top: 80px; font-size: 80px; font-weight: 200; letter-spacing: -2px; }
+        .lock-date { margin-top: -15px; font-size: 20px; font-weight: 500; color: rgba(255,255,255,0.9); }
+        .lock-prompt { margin-top: 50px; font-size: 16px; font-weight: 400; }
+
+        .passcode-dots { display: flex; gap: 15px; margin-top: 20px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid #fff; background: transparent; }
+        .dot.filled { background: #fff; }
+
+        .numpad {
+            margin-top: 50px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px 25px;
+        }
+
+        .num-btn {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+        .num-btn:active { background: rgba(255,255,255,0.3); }
+        .num-main { font-size: 32px; font-weight: 400; }
+        .num-sub { font-size: 10px; letter-spacing: 2px; font-weight: 600; margin-top: -5px; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-10px); }
+            80% { transform: translateX(10px); }
+        }
+        .shake { animation: shake 0.4s; }
+
+        /* HOME SCREEN */
+        #view-homescreen {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%230f2027" /><stop offset="50%" stop-color="%23203a43" /><stop offset="100%" stop-color="%232c5364" /></linearGradient></defs><rect width="100%" height="100%" fill="url(%23g)"/></svg>');
+            background-size: cover;
+            padding-top: 60px;
+            z-index: 20;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px 15px;
+            padding: 20px;
+        }
+
+        .app-icon-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .app-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .app-name {
+            font-size: 11px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+            color: #fff;
+        }
+
+        .bg-wa { background: #25D366; }
+        .bg-msg { background: #34c759; }
+        .bg-music { background: #fa233b; }
+        .bg-cam { background: #d1d1d6; }
+        .bg-settings { background: #8e8e93; }
+        .bg-notes { background: #fff; }
+        .bg-files { background: #fff; }
+        .bg-phone { background: #34c759; }
+
+        .dock {
+            position: absolute;
+            bottom: 25px;
+            left: 15px;
+            right: 15px;
+            height: 85px;
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        /* HEADER COMMON (iOS Style) */
+        .ios-header {
+            padding: 60px 20px 10px 20px;
+            border-bottom: 1px solid #222;
+            background: var(--bg-dark);
+            color: #fff;
+        }
+        .ios-header-title { font-size: 32px; font-weight: bold; }
+        .ios-back { color: var(--accent-blue); font-size: 17px; cursor: pointer; display: flex; align-items: center; margin-bottom: 10px;}
+
+        /* WHATSAPP LIST */
+        #view-wa-list { background: var(--bg-dark); z-index: 30; }
+        .wa-list-item {
+            display: flex;
+            padding: 12px 20px;
+            align-items: center;
+            border-bottom: 1px solid #1c1c1e;
+            cursor: pointer;
+        }
+        .wa-list-item:active { background: #111; }
+        .wa-list-pic { width: 50px; height: 50px; border-radius: 50%; background: #ccc; margin-right: 15px; display:flex; justify-content:center; align-items:center; color:#000; font-weight:bold; font-size: 20px;}
+        .wa-list-content { flex: 1; }
+        .wa-list-top { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .wa-list-name { font-size: 16px; font-weight: 600; color: #fff;}
+        .wa-list-time { font-size: 14px; color: var(--text-muted); }
+        .wa-list-msg { font-size: 14px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+
+        /* WHATSAPP CHAT COMMON */
+        .wa-chat-view { background: var(--wa-bg); z-index: 40; }
+        .wa-header { height: 90px; background: var(--wa-header); display: flex; align-items: flex-end; padding: 10px 15px; gap: 10px; border-bottom: 1px solid #2a3942; }
+        .back-btn { color: var(--accent-blue); font-size: 30px; line-height: 20px; cursor: pointer; margin-bottom: 5px;}
+        .wa-profile-pic { width: 36px; height: 36px; border-radius: 50%; background: #ccc; display: flex; justify-content: center; align-items: center; overflow: hidden; color:#000; font-weight:bold;}
+        .wa-contact-info { flex: 1; margin-bottom: 2px;}
+        .wa-name { font-size: 16px; font-weight: 600; color:#fff;}
+        .wa-status { font-size: 12px; color: var(--text-muted); }
+        .wa-chat-area { flex: 1; padding: 20px 15px; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.05"><path fill="%23ffffff" d="M10 10h10v10H10z"/></svg>') var(--wa-bg); display: flex; flex-direction: column; gap: 10px; overflow-y:auto;}
+        .wa-date-pill { align-self: center; background: #182229; color: #8296a1; font-size: 12px; padding: 5px 12px; border-radius: 10px; margin-bottom: 10px; }
+        .wa-bubble { max-width: 80%; padding: 8px 10px 20px 10px; border-radius: 10px; font-size: 15px; line-height: 1.4; position: relative; color: #fff;}
+        .wa-out { align-self: flex-end; background: var(--wa-msg-out); border-top-right-radius: 0; }
+        .wa-in { align-self: flex-start; background: var(--wa-msg-in); border-top-left-radius: 0; }
+        .wa-time { position: absolute; bottom: 4px; right: 8px; font-size: 10px; color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 3px; }
+        .wa-input-area { height: 80px; background: var(--wa-header); padding: 10px; display: flex; gap: 10px; }
+        .wa-input-box { flex: 1; background: #2a3942; border-radius: 20px; height: 40px; }
+
+        /* SETTINGS */
+        #view-settings { background: #000; z-index: 30; overflow-y: auto;}
+        .settings-group { background: #1c1c1e; border-radius: 10px; margin: 20px; overflow: hidden; }
+        .set-row { display: flex; align-items: center; padding: 12px 15px; border-bottom: 1px solid #333; gap: 15px;}
+        .set-row:last-child { border-bottom: none; }
+        .set-icon { width: 30px; height: 30px; border-radius: 6px; display: flex; justify-content: center; align-items: center; }
+        .set-text { flex: 1; font-size: 16px; color: #fff; }
+        .profile-row { padding: 15px; display: flex; align-items: center; gap: 15px;}
+        .profile-pic { width: 60px; height: 60px; border-radius: 50%; background: #ccc; }
+        .profile-name { font-size: 20px; color: #fff; }
+        .profile-sub { font-size: 13px; color: var(--text-muted); margin-top: 3px;}
+
+        /* TOGGLE SWITCH */
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 30px;
+            background: #39393d;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 26px;
+            height: 26px;
+            background: #fff;
+            border-radius: 50%;
+            transition: 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .toggle-switch.active { background: #34c759; }
+        .toggle-switch.active::after { transform: translateX(20px); }
+
+        /* NOTES */
+        #view-notes { background: #000; z-index: 30; }
+        .note-list { padding: 0 20px; }
+        .note-item { padding: 15px 0; border-bottom: 1px solid #333; cursor: pointer; }
+        .note-title { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 5px; }
+        .note-desc { font-size: 14px; color: var(--text-muted); }
+
+        .note-detail-view { background: #000; z-index: 40; padding: 60px 20px 20px 20px;}
+        .note-content-title { font-size: 30px; font-weight: bold; margin-bottom: 20px; color: #fff;}
+        .note-text { font-size: 17px; line-height: 1.6; color: #eee; }
+        .note-check { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .circle-check { width: 20px; height: 20px; border: 1.5px solid #555; border-radius: 50%; }
+
+        /* FILES & MESSAGES */
+        #view-files, #view-messages { background: #000; z-index: 30; }
+        .empty-state { flex: 1; display: flex; justify-content: center; align-items: center; flex-direction: column; color: var(--text-muted); gap: 10px; font-size: 16px;}
+
+        /* MUSIC */
+        #view-music { background: #000; z-index: 30; overflow-y: auto;}
+        .music-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
+        .music-card { display: flex; flex-direction: column; gap: 5px; cursor: pointer;}
+        .album-art { width: 100%; aspect-ratio: 1; background: #333; border-radius: 8px; display: flex; justify-content: center; align-items: center; color: rgba(255,255,255,0.8); font-size: 40px; font-weight:bold;}
+        .song-title { font-size: 14px; color: #fff; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .song-artist { font-size: 12px; color: var(--text-muted); }
+
+        /* NOW PLAYING (MUSIC) - ANIMASYON İÇİN */
+        #view-now-playing { background: #1c1c1e; z-index: 50; padding: 60px 20px 20px 20px; }
+        .np-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .np-down { color: #fff; font-size: 24px; cursor: pointer; font-weight:bold; }
+        .np-title { color: #fff; font-size: 14px; font-weight: bold; letter-spacing: 1px;}
+        .np-art { width: 100%; aspect-ratio: 1; border-radius: 12px; background: #333; display: flex; justify-content: center; align-items: center; font-size: 100px; color: rgba(255,255,255,0.8); font-weight:bold; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
+        .np-info { margin-bottom: 30px; }
+        .np-song { font-size: 24px; font-weight: bold; color: #fff; margin-bottom: 5px; }
+        .np-artist { font-size: 18px; color: var(--accent-red); }
+        .np-progress { margin-bottom: 40px; }
+        .np-bar { width: 100%; height: 6px; background: #444; border-radius: 3px; overflow: hidden; margin-bottom: 10px; }
+        .np-fill { width: 0%; height: 100%; background: #fff; transition: width 0.1s linear;}
+        .np-times { display: flex; justify-content: space-between; font-size: 12px; color: #888; }
+        .np-controls { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+        .np-btn { font-size: 30px; color: #fff; cursor: pointer; }
+        .play-btn { font-size: 50px; }
+
+        /* CAMERA ERROR MODAL */
+        .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; display: none; justify-content: center; align-items: center; }
+        .modal-box { background: rgba(30,30,30,0.95); backdrop-filter: blur(10px); width: 270px; border-radius: 14px; text-align: center; display: flex; flex-direction: column; }
+        .modal-text { padding: 20px; }
+        .modal-title { font-size: 17px; font-weight: 600; color: #fff; margin-bottom: 5px; }
+        .modal-desc { font-size: 13px; color: #ddd; }
+        .modal-btn { border-top: 1px solid #444; padding: 12px; color: var(--accent-blue); font-size: 17px; font-weight: 400; cursor: pointer; }
+
+        /* PHONE APP */
+        #view-phone { background: var(--bg-dark); z-index: 30; }
+        .call-list { flex: 1; overflow-y: auto; }
+        .call-row { display: flex; align-items: center; padding: 12px 20px; border-bottom: 1px solid #1c1c1e; cursor: pointer; }
+        .call-info { flex: 1; }
+        .call-name { font-size: 18px; font-weight: 600; color: var(--text-light); }
+        .call-type { font-size: 14px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; margin-top: 2px;}
+        .call-right { display: flex; align-items: center; gap: 10px; }
+        .call-time { font-size: 15px; color: var(--text-muted); }
+        .info-btn { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--accent-blue); color: var(--accent-blue); display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 14px; }
+        .phone-tabs { height: 80px; background: #111; display: flex; justify-content: space-around; padding-top: 10px; border-top: 1px solid #222; }
+        .p-tab { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-muted); font-size: 10px; }
+        .p-tab.active { color: var(--accent-blue); }
+
+        /* CALL DETAIL */
+        #view-call-detail { background: #000; color: #fff; z-index: 40; }
+        .cd-header { padding: 60px 15px 10px 15px; display: flex; align-items: center; border-bottom: 1px solid #222; }
+        .cd-back { color: var(--accent-blue); font-size: 17px; cursor: pointer; }
+        .cd-content { padding: 20px; overflow-y: auto; flex:1; }
+        .cd-name { font-size: 28px; font-weight: bold; margin-bottom: 20px; }
+        .cd-block { background: #1c1c1e; border-radius: 10px; padding: 15px; margin-bottom: 20px; }
+        .cd-date { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
+        .cd-row { display: flex; justify-content: space-between; font-size: 15px; padding: 8px 0; border-bottom: 1px solid #333; }
+        .cd-row:last-child { border: none; }
+        .cd-label { color: #fff; }
+        .cd-val { color: var(--text-muted); }
+
+    </style>
+</head>
+<body>
+
+<div class="iphone-frame">
+    <div class="notch"></div>
+    
+    <div class="status-bar" id="status-bar">
+        <div class="time" id="top-time">01:30</div>
+        <div class="status-right">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="white"><path d="M1 9h2v2H1zm3-2h2v4H4zm3-2h2v6H7zm3-2h2v8h-2zm3-2h2v10h-2z"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="white"><path d="M8 2a9 9 0 00-6.4 2.6L0 6c2-2 4.8-3 8-3s6 1 8 3l-1.6-1.4A9 9 0 008 2zm0 3a5 5 0 00-3.5 1.5L3 8c1.3-1.3 3-2 5-2s3.7.7 5 2l-1.5-1.5A5 5 0 008 5zm0 3a2 2 0 00-1.4.6L8 10l1.4-1.4A2 2 0 008 8z"/></svg>
+            <svg width="22" height="12" viewBox="0 0 22 12" fill="none" stroke="white" stroke-width="1"><rect x="1" y="2" width="18" height="8" rx="2"/><path d="M20 4v4" stroke-width="2"/><rect x="2" y="3" width="12" height="6" fill="white" stroke="none"/></svg>
+        </div>
+    </div>
+
+    <!-- LOCK SCREEN -->
+    <div class="view active" id="view-lockscreen">
+        <div class="lock-time" id="lock-time">01:30</div>
+        <div class="lock-date">13 Mayıs Çarşamba</div>
+        <div class="lock-prompt" id="lock-prompt">Kodu Girin</div>
+        
+        <div class="passcode-dots" id="passcode-dots">
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        </div>
+
+        <div class="numpad">
+            <div class="num-btn" onclick="pressKey('1')"><div class="num-main">1</div><div class="num-sub"></div></div>
+            <div class="num-btn" onclick="pressKey('2')"><div class="num-main">2</div><div class="num-sub">A B C</div></div>
+            <div class="num-btn" onclick="pressKey('3')"><div class="num-main">3</div><div class="num-sub">D E F</div></div>
+            <div class="num-btn" onclick="pressKey('4')"><div class="num-main">4</div><div class="num-sub">G H I</div></div>
+            <div class="num-btn" onclick="pressKey('5')"><div class="num-main">5</div><div class="num-sub">J K L</div></div>
+            <div class="num-btn" onclick="pressKey('6')"><div class="num-main">6</div><div class="num-sub">M N O</div></div>
+            <div class="num-btn" onclick="pressKey('7')"><div class="num-main">7</div><div class="num-sub">P Q R S</div></div>
+            <div class="num-btn" onclick="pressKey('8')"><div class="num-main">8</div><div class="num-sub">T U V</div></div>
+            <div class="num-btn" onclick="pressKey('9')"><div class="num-main">9</div><div class="num-sub">W X Y Z</div></div>
+            <div></div>
+            <div class="num-btn" onclick="pressKey('0')"><div class="num-main">0</div><div class="num-sub"></div></div>
+            <div></div>
+        </div>
+    </div>
+
+    <!-- HOME SCREEN -->
+    <div class="view" id="view-homescreen">
+        <div class="app-grid">
+            <div class="app-icon-container" onclick="openApp('view-wa-list')">
+                <div class="app-icon bg-wa">
+                    <svg width="35" height="35" viewBox="0 0 24 24" fill="white"><path d="M12.031 0C5.383 0 0 5.383 0 12.031c0 2.115.55 4.182 1.597 5.997L.175 23.364l5.503-1.444c1.758.966 3.743 1.476 5.853 1.476 6.648 0 12.031-5.383 12.031-12.031S18.679 0 12.031 0zm0 21.411c-1.802 0-3.56-.484-5.11-1.404l-.366-.217-3.799.996.996-3.799-.217-.366a9.99 9.99 0 01-1.404-5.11c0-5.514 4.486-10 10-10s10 4.486 10 10-4.486 10-10 10zm5.495-7.511c-.301-.151-1.782-.88-2.059-.98-.276-.101-.477-.151-.678.151-.201.301-.778.98-.954 1.18-.176.201-.351.226-.653.075-.301-.151-1.272-.469-2.423-1.5-.895-.802-1.5-1.792-1.676-2.093-.176-.301-.019-.464.132-.615.135-.135.301-.351.452-.527.151-.176.201-.301.301-.502.101-.201.05-.376-.025-.527-.075-.151-.678-1.631-.929-2.234-.244-.587-.492-.508-.678-.517-.176-.008-.376-.008-.577-.008s-.527.075-.803.376c-.276.301-1.054 1.03-1.054 2.511s1.079 2.912 1.23 3.113c.151.201 2.122 3.238 5.139 4.538.718.31 1.278.495 1.716.634.721.229 1.378.197 1.896.119.582-.088 1.782-.728 2.033-1.431.251-.703.251-1.306.176-1.431-.075-.126-.276-.201-.577-.352z"/></svg>
+                </div>
+                <span class="app-name">WhatsApp</span>
+            </div>
+            <div class="app-icon-container" onclick="openApp('view-settings')">
+                <div class="app-icon bg-settings">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="#d1d1d6"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+                </div>
+                <span class="app-name">Ayarlar</span>
+            </div>
+            <div class="app-icon-container" onclick="openApp('view-files')">
+                <div class="app-icon bg-files">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="var(--accent-blue)"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+                </div>
+                <span class="app-name">Dosyalar</span>
+            </div>
+            <div class="app-icon-container" onclick="openApp('view-notes')">
+                <div class="app-icon bg-notes">
+                    <div style="width:100%; height:12px; background:#fecb2e; position:absolute; top:0;"></div>
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="#ccc" style="margin-top:10px;"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+                </div>
+                <span class="app-name">Notlar</span>
+            </div>
+        </div>
+
+        <!-- DOCK -->
+        <div class="dock">
+            <!-- TELEFON -->
+            <div class="app-icon-container" onclick="openApp('view-phone')">
+                <div class="app-icon bg-phone">
+                    <svg width="35" height="35" viewBox="0 0 24 24" fill="white"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+                </div>
+            </div>
+            <!-- MESAJLAR -->
+            <div class="app-icon-container" onclick="openApp('view-messages')">
+                <div class="app-icon bg-msg">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="#fff"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+                </div>
+            </div>
+            <!-- MÜZİK -->
+            <div class="app-icon-container" onclick="openApp('view-music')">
+                <div class="app-icon bg-music">
+                    <svg width="35" height="35" viewBox="0 0 24 24" fill="#fff"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+                </div>
+            </div>
+            <!-- KAMERA -->
+            <div class="app-icon-container" onclick="triggerCameraError()">
+                <div class="app-icon bg-cam">
+                    <svg width="35" height="35" viewBox="0 0 24 24" fill="#333"><circle cx="12" cy="12" r="3.2"/><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WHATSAPP LIST -->
+    <div class="view" id="view-wa-list">
+        <div class="wa-header" style="height:100px; justify-content:space-between; align-items:center;">
+            <div style="font-size:26px; font-weight:bold; color:#fff; margin-top:20px;">Sohbetler</div>
+            <div style="color:var(--accent-blue); font-size:20px; margin-top:20px;">+</div>
+        </div>
+        <div style="overflow-y:auto; flex:1;">
+            <div class="wa-list-item" onclick="openWaChat('davut')">
+                <div class="wa-list-pic" style="background:#ccc;">D</div>
+                <div class="wa-list-content">
+                    <div class="wa-list-top"><div class="wa-list-name">Davut Amca</div><div class="wa-list-time">01:20</div></div>
+                    <div class="wa-list-msg">Senden korkmuyorum! Elinden ge...</div>
+                </div>
+            </div>
+            <div class="wa-list-item" onclick="openWaChat('ozgur')">
+                <div class="wa-list-pic" style="background:#ffb3ba;">Ö</div>
+                <div class="wa-list-content">
+                    <div class="wa-list-top"><div class="wa-list-name">Özgür ❤️</div><div class="wa-list-time">Dün</div></div>
+                    <div class="wa-list-msg">Olurrr harika olur ❤️</div>
+                </div>
+            </div>
+            <div class="wa-list-item" onclick="openWaChat('hande')">
+                <div class="wa-list-pic" style="background:#baffc9;">H</div>
+                <div class="wa-list-content">
+                    <div class="wa-list-top"><div class="wa-list-name">Hande</div><div class="wa-list-time">Dün</div></div>
+                    <div class="wa-list-msg">Oha hemen SS atıyorsun bana ça...</div>
+                </div>
+            </div>
+            <div class="wa-list-item" onclick="openWaChat('annem')">
+                <div class="wa-list-pic" style="background:#ffdfba;">A</div>
+                <div class="wa-list-content">
+                    <div class="wa-list-top"><div class="wa-list-name">Annem</div><div class="wa-list-time">Pazartesi</div></div>
+                    <div class="wa-list-msg">Sağ ol anneciğim, dikkat ediyo...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WHATSAPP CHAT: DAVUT -->
+    <div class="view wa-chat-view" id="view-wa-davut">
+        <div class="wa-header">
+            <div class="back-btn" onclick="backToWaList('view-wa-davut')">‹</div>
+            <div class="wa-profile-pic" style="background:#ccc;">D</div>
+            <div class="wa-contact-info">
+                <div class="wa-name">Davut Amca</div>
+                <div class="wa-status">çevrimiçi değil</div>
+            </div>
+        </div>
+        <div class="wa-chat-area">
+            <div class="wa-date-pill">Bugün</div>
+            <div class="wa-bubble wa-out">
+                Senden korkmuyorum! Elinden geleni ardına koyma!
+                <div class="wa-time">01:20 <svg width="14" height="14" viewBox="0 0 24 24" fill="#53bdeb"><path d="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41L6 19l1.41-1.41L1.83 12 .41 13.41z"/></svg></div>
+            </div>
+        </div>
+        <div class="wa-input-area">
+            <div class="wa-input-box"></div>
+        </div>
+    </div>
+
+    <!-- WHATSAPP CHAT: ÖZGÜR -->
+    <div class="view wa-chat-view" id="view-wa-ozgur">
+        <div class="wa-header">
+            <div class="back-btn" onclick="backToWaList('view-wa-ozgur')">‹</div>
+            <div class="wa-profile-pic" style="background:#ffb3ba;">Ö</div>
+            <div class="wa-contact-info">
+                <div class="wa-name">Özgür ❤️</div>
+                <div class="wa-status">çevrimiçi</div>
+            </div>
+        </div>
+        <div class="wa-chat-area">
+            <div class="wa-date-pill">Dün</div>
+            <div class="wa-bubble wa-in">
+                Aşkım napıyorsun, çok özledim
+                <div class="wa-time">19:45</div>
+            </div>
+            <div class="wa-bubble wa-out">
+                Ben de seni çok özledim sevgilim, müzik dinliyorum öyle sen napıyosun
+                <div class="wa-time">19:48 <svg width="14" height="14" viewBox="0 0 24 24" fill="#53bdeb"><path d="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41L6 19l1.41-1.41L1.83 12 .41 13.41z"/></svg></div>
+            </div>
+            <div class="wa-bubble wa-in">
+                Ben de seni düşünüyorum. Yarın okul çıkışı sinemaya gidelim miiii
+                <div class="wa-time">19:50</div>
+            </div>
+            <div class="wa-bubble wa-out">
+                Olurrr harika olur ❤️
+                <div class="wa-time">19:51 <svg width="14" height="14" viewBox="0 0 24 24" fill="#53bdeb"><path d="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41L6 19l1.41-1.41L1.83 12 .41 13.41z"/></svg></div>
+            </div>
+        </div>
+        <div class="wa-input-area">
+            <div class="wa-input-box"></div>
+        </div>
+    </div>
+
+    <!-- WHATSAPP CHAT: HANDE -->
+    <div class="view wa-chat-view" id="view-wa-hande">
+        <div class="wa-header">
+            <div class="back-btn" onclick="backToWaList('view-wa-hande')">‹</div>
+            <div class="wa-profile-pic" style="background:#baffc9;">H</div>
+            <div class="wa-contact-info">
+                <div class="wa-name">Hande</div>
+                <div class="wa-status">son görülme bugün 00:15</div>
+            </div>
+        </div>
+        <div class="wa-chat-area">
+            <div class="wa-date-pill">Dün</div>
+            <div class="wa-bubble wa-in">
+                Kızım inanamazsın ne oldu! Hemen buluşmamız lazım!
+                <div class="wa-time">15:20</div>
+            </div>
+            <div class="wa-bubble wa-out">
+                Ne oldu aşkım çatlattın insanı
+                <div class="wa-time">15:45 <svg width="14" height="14" viewBox="0 0 24 24" fill="#53bdeb"><path d="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41L6 19l1.41-1.41L1.83 12 .41 13.41z"/></svg></div>
+            </div>
+            <div class="wa-bubble wa-in">
+                Berk sonunda yazdı!!! Hem de ne yazmak...
+                <div class="wa-time">15:46</div>
+            </div>
+            <div class="wa-bubble wa-out">
+                Oha hemen SS atıyorsun bana çabukkk
+                <div class="wa-time">15:50 <svg width="14" height="14" viewBox="0 0 24 24" fill="#53bdeb"><path d="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41L6 19l1.41-1.41L1.83 12 .41 13.41z"/></svg></div>
+            </div>
+        </div>
+        <div class="wa-input-area">
+            <div class="wa-input-box"></div>
+        </div>
+    </div>
+
+    <!-- WHATSAPP CHAT: ANNEM -->
+    <div class="view wa-chat-view" id="view-wa-annem">
+        <div class="wa-header">
+            <div class="back-btn" onclick="backToWaList('view-wa-annem')">‹</div>
+            <div class="wa-profile-pic" style="background:#ffdfba;">A</div>
+            <div class="wa-contact-info">
+                <div class="wa-name">Annem</div>
+                <div class="wa-status">çevrimiçi değil</div>
+            </div>
+        </div>
+        <div class="wa-chat-area">
+            <div class="wa-date-pill">Pazartesi</div>
+            <div class="wa-bubble wa-in">
+                Kızım nerede kaldın? Merak ettim.
+                <div class="wa-time">18:15</div>
+            </div>
+            <div class="wa-bubble wa-out">
+                Geliyorum anne, yoldayım. Kasaba Davut Amcanın yanına çalışmaya gittim, işim yeni bitti.
+                <div class="wa-time">18:20 <svg width="14" height="14" viewBox="0 0 24 24" fill="#53bdeb"><path d="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41L6 19l1.41-1.41L1.83 12 .41 13.41z"/></svg></div>
+            </div>
+            <div class="wa-bubble wa-in">
+                Tamam; dikkat et yine elini kesme.
+                <div class="wa-time">18:22</div>
+            </div>
+            <div class="wa-bubble wa-out">
+                Sağ ol anneciğim, dikkat ediyorum.
+                <div class="wa-time">18:25 <svg width="14" height="14" viewBox="0 0 24 24" fill="#53bdeb"><path d="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41L6 19l1.41-1.41L1.83 12 .41 13.41z"/></svg></div>
+            </div>
+        </div>
+        <div class="wa-input-area">
+            <div class="wa-input-box"></div>
+        </div>
+    </div>
+
+    <!-- AYARLAR -->
+    <div class="view" id="view-settings">
+        <div class="ios-header"><div class="ios-header-title">Ayarlar</div></div>
+        
+        <div class="settings-group" style="margin-top:10px;">
+            <div class="profile-row">
+                <div class="profile-pic"><img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" width="60" height="60" style="background:#aaa; border-radius:50%;"></div>
+                <div>
+                    <div class="profile-name">Asude Kayakçı</div>
+                    <div class="profile-sub">Apple Kimliği, iCloud, Medya...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-group">
+            <div class="set-row">
+                <div class="set-icon" style="background:#ff9500"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M22 16V8l-3-1v10l3-1zm-4-9H6V5h12v2zm0 10H6v-2h12v2zm-6-5h6v-2h-6v2z"/></svg></div>
+                <div class="set-text">Uçak Modu</div>
+                <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+            </div>
+            <div class="set-row">
+                <div class="set-icon" style="background:#0a84ff"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 3C7.5 3 3.4 4.5.3 7l2 2.5C4.8 7.6 8.2 6.5 12 6.5s7.2 1.1 9.7 3l2-2.5C20.6 4.5 16.5 3 12 3zm0 5.5c-2.2 0-4.3.7-6 1.8l2 2.5c1.1-.9 2.5-1.3 4-1.3s2.9.4 4 1.3l2-2.5c-1.7-1.1-3.8-1.8-6-1.8zm0 5.5c-.8 0-1.5.3-2.1.8l2.1 2.7 2.1-2.7c-.6-.5-1.3-.8-2.1-.8z"/></svg></div>
+                <div class="set-text">Wi-Fi</div>
+                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+            </div>
+            <div class="set-row">
+                <div class="set-icon" style="background:#0a84ff"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M17.7 7.7L12 2v7.6L7.3 5 6 6.4l5.3 5.1L6 16.6 7.3 18l4.7-4.6V21l5.7-5.7L13.4 11l4.3-3.3zm-3.8 8.4L13 17.1v-3.2l.9.9zM13 6.9l.9.9-1.8 1.8V6.9z"/></svg></div>
+                <div class="set-text">Bluetooth</div>
+                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+            </div>
+            <div class="set-row">
+                <div class="set-icon" style="background:#34c759"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5zm4 4h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg></div>
+                <div class="set-text">Hücresel Veri</div>
+                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTLAR -->
+    <div class="view" id="view-notes">
+        <div class="ios-header">
+            <div class="ios-header-title" style="color:#fecb2e;">Klasörler</div>
+            <div style="font-size:32px; font-weight:bold; margin-top:10px;">Notlar</div>
+        </div>
+        <div class="note-list">
+            <div class="note-item" onclick="openView('view-note-pazar')">
+                <div class="note-title">Pazardan Alınacaklar</div>
+                <div class="note-desc">13 Mayıs - Domates, Salatalık...</div>
+            </div>
+            <div class="note-item" onclick="openView('view-note-okul')">
+                <div class="note-title">Okul Projesi Fikirleri</div>
+                <div class="note-desc">2 Mayıs - Tarih sunumu için notlar</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOT DETAY 1 -->
+    <div class="view note-detail-view" id="view-note-pazar">
+        <div class="ios-back" onclick="closeNoteDetail('view-note-pazar')">‹ Notlar</div>
+        <div class="note-content-title">Pazardan Alınacaklar</div>
+        <div class="note-text">
+            <div class="note-check"><div class="circle-check"></div> Domates (2 kg)</div>
+            <div class="note-check"><div class="circle-check"></div> Salatalık (1 kg)</div>
+            <div class="note-check"><div class="circle-check"></div> Beyaz Peynir</div>
+            <div class="note-check"><div class="circle-check"></div> Çilek</div>
+            <br>
+            <i>*Unutma: Hande'ye geçerken kahve al.</i>
+        </div>
+    </div>
+
+    <!-- NOT DETAY 2 -->
+    <div class="view note-detail-view" id="view-note-okul">
+        <div class="ios-back" onclick="closeNoteDetail('view-note-okul')">‹ Notlar</div>
+        <div class="note-content-title">Okul Projesi Fikirleri</div>
+        <div class="note-text">
+            Tarih Sunumu İçin Alt Başlıklar:<br><br>
+            1. Sanayi Devrimi'nin etkileri.<br>
+            2. Sınıf çatışmaları ve işçi hakları.<br>
+            3. Sunum için internetten ilgili görselleri dosyaya ekle.<br>
+            <br>
+            <i>Eğer kaynak bulamazsam kütüphaneye gitmem gerekecek.</i>
+        </div>
+    </div>
+
+    <!-- DOSYALAR -->
+    <div class="view" id="view-files">
+        <div class="ios-header"><div class="ios-header-title">Göz At</div></div>
+        <div class="empty-state">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="#333"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+            <div>Klasör Boş</div>
+        </div>
+    </div>
+
+    <!-- MESAJLAR -->
+    <div class="view" id="view-messages">
+        <div class="ios-header"><div class="ios-header-title">Mesajlar</div></div>
+        <div class="empty-state">Mesaj Yok</div>
+    </div>
+
+    <!-- MÜZİK -->
+    <div class="view" id="view-music">
+        <div class="ios-header"><div class="ios-header-title" style="color:#fa233b;">Arşiv</div></div>
+        <div style="padding:20px; font-size:22px; font-weight:bold;">Son Eklenenler</div>
+        <div class="music-grid">
+            <div class="music-card" onclick="playSong('Antidepresan', 'Mabel Matiz, Mert Demir', 'linear-gradient(45deg, #ff9a9e, #fecfef)', 'M')">
+                <div class="album-art" style="background: linear-gradient(45deg, #ff9a9e, #fecfef);">M</div>
+                <div class="song-title">Antidepresan</div>
+                <div class="song-artist">Mabel Matiz, Mert Demir</div>
+            </div>
+            <div class="music-card" onclick="playSong('Pişman Değilim', 'Semicenk, Doğu Swag', 'linear-gradient(45deg, #a18cd1, #fbc2eb)', 'S')">
+                <div class="album-art" style="background: linear-gradient(45deg, #a18cd1, #fbc2eb);">S</div>
+                <div class="song-title">Pişman Değilim</div>
+                <div class="song-artist">Semicenk, Doğu Swag</div>
+            </div>
+            <div class="music-card" onclick="playSong('Bi\' Tek Ben Anlarım', 'KÖFN', 'linear-gradient(45deg, #84fab0, #8fd3f4)', 'K')">
+                <div class="album-art" style="background: linear-gradient(45deg, #84fab0, #8fd3f4);">K</div>
+                <div class="song-title">Bi' Tek Ben Anlarım</div>
+                <div class="song-artist">KÖFN</div>
+            </div>
+            <div class="music-card" onclick="playSong('Flowers', 'Miley Cyrus', 'linear-gradient(45deg, #fccb90, #d57eeb)', 'F')">
+                <div class="album-art" style="background: linear-gradient(45deg, #fccb90, #d57eeb);">F</div>
+                <div class="song-title">Flowers</div>
+                <div class="song-artist">Miley Cyrus</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOW PLAYING (MUSIC) - ANIMASYON İÇİN -->
+    <div class="view" id="view-now-playing">
+        <div class="np-header">
+            <div class="np-down" onclick="closeNowPlaying()">v</div>
+            <div class="np-title">Şu An Çalınan</div>
+            <div style="width:20px;"></div>
+        </div>
+        <div class="np-art" id="np-art">M</div>
+        <div class="np-info">
+            <div class="np-song" id="np-song">Antidepresan</div>
+            <div class="np-artist" id="np-artist">Mabel Matiz, Mert Demir</div>
+        </div>
+        <div class="np-progress">
+            <div class="np-bar"><div class="np-fill" id="np-fill"></div></div>
+            <div class="np-times">
+                <span id="np-current">0:00</span>
+                <span id="np-total">-3:24</span>
+            </div>
+        </div>
+        <div class="np-controls">
+            <div class="np-btn">⏮</div>
+            <div class="np-btn play-btn" id="np-play" onclick="togglePlay()">▶</div>
+            <div class="np-btn">⏭</div>
+        </div>
+    </div>
+
+    <!-- KAMERA ERROR MODAL -->
+    <div class="modal-overlay" id="cam-modal">
+        <div class="modal-box">
+            <div class="modal-text">
+                <div class="modal-title">Kamera Durduruldu</div>
+                <div class="modal-desc">Beklenmeyen bir donanım arızası nedeniyle uygulama başlatılamıyor.</div>
+            </div>
+            <div class="modal-btn" onclick="closeCameraError()">Tamam</div>
+        </div>
+    </div>
+
+    <!-- PHONE APP -->
+    <div class="view" id="view-phone">
+        <div class="ios-header"><div class="ios-header-title">Son Aramalar</div></div>
+        
+        <div class="call-list">
+            <div class="call-row" onclick="openCallDetail('davut')">
+                <div class="call-info">
+                    <div class="call-name" style="color:var(--text-light);">Davut Amca</div>
+                    <div class="call-type">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--text-muted)"><path d="M20 5.41L18.59 4 7 15.59V9H5v10h10v-2H8.41L20 5.41z"/></svg>
+                        Gelen Arama
+                    </div>
+                </div>
+                <div class="call-right">
+                    <div class="call-time">01:25</div>
+                    <div class="info-btn">i</div>
+                </div>
+            </div>
+            <div class="call-row" onclick="openCallDetail('ozgur')">
+                <div class="call-info">
+                    <div class="call-name" style="color:var(--text-light);">Özgür ❤️</div>
+                    <div class="call-type">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--text-muted)"><path d="M20 5.41L18.59 4 7 15.59V9H5v10h10v-2H8.41L20 5.41z"/></svg>
+                        Gelen Arama
+                    </div>
+                </div>
+                <div class="call-right">
+                    <div class="call-time">19:35</div>
+                    <div class="info-btn">i</div>
+                </div>
+            </div>
+            <div class="call-row" onclick="openCallDetail('hande')">
+                <div class="call-info">
+                    <div class="call-name" style="color:var(--text-light);">Hande</div>
+                    <div class="call-type">Giden Arama</div>
+                </div>
+                <div class="call-right">
+                    <div class="call-time">15:51</div>
+                    <div class="info-btn">i</div>
+                </div>
+            </div>
+            <div class="call-row" onclick="openCallDetail('annem')">
+                <div class="call-info">
+                    <div class="call-name" style="color:var(--text-light);">Annem</div>
+                    <div class="call-type">Giden Arama</div>
+                </div>
+                <div class="call-right">
+                    <div class="call-time">11:30</div>
+                    <div class="info-btn">i</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phone-tabs">
+            <div class="p-tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>Hızlı Arama</div>
+            <div class="p-tab active"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>Son</div>
+            <div class="p-tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Kişiler</div>
+            <div class="p-tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>Klavye</div>
+        </div>
+    </div>
+
+    <!-- CALL DETAIL -->
+    <div class="view" id="view-call-detail">
+        <div class="cd-header">
+            <div class="cd-back" onclick="closeCallDetail()">‹ Son Aramalar</div>
+        </div>
+        <div class="cd-content">
+            <div class="cd-name" id="cd-name">Davut Amca</div>
+            <div class="cd-block" id="cd-calls-block">
+                <!-- Javascript ile doldurulacak -->
+            </div>
+            <div class="cd-block" style="color:var(--accent-blue);">
+                <div class="cd-row">Mesaj Gönder</div>
+                <div class="cd-row">Kişiyi Paylaş</div>
+            </div>
+            <div class="cd-block" style="color:var(--accent-red);">
+                <div class="cd-row">Bu Arayanı Engelle</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="home-indicator" onclick="goHome()"></div>
+</div>
+
+<script>
+    let pin = "";
+    const targetPin = "121015";
+    const dots = document.querySelectorAll('.dot');
+    const lockPrompt = document.getElementById('lock-prompt');
+
+    function pressKey(num) {
+        if (pin.length < 6) {
+            pin += num;
+            updateDots();
+            
+            if (pin.length === 6) {
+                if (pin === targetPin) {
+                    setTimeout(() => {
+                        document.getElementById('view-lockscreen').classList.remove('active');
+                        document.getElementById('view-homescreen').classList.add('active');
+                    }, 200);
+                } else {
+                    lockPrompt.innerText = "Yanlış Parola";
+                    document.getElementById('passcode-dots').classList.add('shake');
+                    setTimeout(() => {
+                        document.getElementById('passcode-dots').classList.remove('shake');
+                        pin = "";
+                        updateDots();
+                        lockPrompt.innerText = "Kodu Girin";
+                    }, 400);
+                }
+            }
+        }
+    }
+
+    function updateDots() {
+        dots.forEach((dot, index) => {
+            if (index < pin.length) dot.classList.add('filled');
+            else dot.classList.remove('filled');
+        });
+    }
+
+    function openApp(id) {
+        document.getElementById(id).classList.add('active');
+    }
+
+    function openView(id) {
+        document.getElementById(id).classList.add('active');
+    }
+
+    function goHome() {
+        if (!document.getElementById('view-lockscreen').classList.contains('active')) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-homescreen').classList.add('active');
+            if (isPlaying) {
+                togglePlay();
+            }
+        }
+    }
+
+    // WHATSAPP CHAT YÖNETİMİ
+    function openWaChat(contact) {
+        document.getElementById('view-wa-list').classList.remove('active');
+        document.getElementById(`view-wa-${contact}`).classList.add('active');
+    }
+
+    function backToWaList(currentChatId) {
+        document.getElementById(currentChatId).classList.remove('active');
+        document.getElementById('view-wa-list').classList.add('active');
+    }
+
+    // AYARLAR TOGGLE
+    function toggleSwitch(element) {
+        element.classList.toggle('active');
+    }
+
+    // NOTLAR YÖNETİMİ
+    function closeNoteDetail(id) {
+        document.getElementById(id).classList.remove('active');
+    }
+
+    // KAMERA HATASI
+    function triggerCameraError() {
+        document.getElementById('cam-modal').style.display = 'flex';
+    }
+
+    function closeCameraError() {
+        document.getElementById('cam-modal').style.display = 'none';
+    }
+
+    // TELEFON DETAYI
+    const callDB = {
+        'davut': { name: 'Davut Amca', date: '13 Mayıs Çarşamba', logs: [{type: 'Gelen Arama', time: '01:25', dur: '32 saniye'}] },
+        'ozgur': { name: 'Özgür ❤️', date: '12 Mayıs Salı', logs: [{type: 'Gelen Arama', time: '19:35', dur: '2 saat 53 dakika'}] },
+        'hande': { name: 'Hande', date: '12 Mayıs Salı', logs: [
+            {type: 'Giden Arama', time: '15:51', dur: '1 saat'},
+            {type: 'Giden Arama', time: '14:50', dur: '1 saat'},
+            {type: 'Giden Arama', time: '13:49', dur: '1 saat'},
+            {type: 'Giden Arama', time: '13:14', dur: '34 dakika'}
+        ]},
+        'annem': { name: 'Annem', date: '12 Mayıs Salı', logs: [{type: 'Giden Arama', time: '11:30', dur: '4 dakika 22 saniye'}] }
+    };
+
+    function openCallDetail(id) {
+        const data = callDB[id];
+        document.getElementById('cd-name').innerText = data.name;
+        
+        let html = `<div class="cd-date">${data.date}</div>`;
+        data.logs.forEach(log => {
+            html += `
+            <div class="cd-row"><div class="cd-label">${log.type}</div><div class="cd-val">${log.time}</div></div>
+            <div class="cd-row"><div class="cd-label">Süre</div><div class="cd-val">${log.dur}</div></div>
+            `;
+        });
+        document.getElementById('cd-calls-block').innerHTML = html;
+        document.getElementById('view-call-detail').classList.add('active');
+    }
+
+    function closeCallDetail() {
+        document.getElementById('view-call-detail').classList.remove('active');
+    }
+
+    // MÜZİK OYNATICI (SESSİZ SİMÜLASYON)
+    const npPlayBtn = document.getElementById('np-play');
+    const npFill = document.getElementById('np-fill');
+    let musicInterval;
+    let currentPlayTime = 0;
+    let isPlaying = false;
+    let totalDuration = 204; // 3:24
+
+    function playSong(title, artist, bg, letter) {
+        document.getElementById('np-song').innerText = title;
+        document.getElementById('np-artist').innerText = artist;
+        document.getElementById('np-art').style.background = bg;
+        document.getElementById('np-art').innerText = letter;
+        
+        document.getElementById('view-now-playing').classList.add('active');
+        
+        currentPlayTime = 0;
+        isPlaying = true;
+        npPlayBtn.innerText = "⏸";
+        startProgress();
+    }
+
+    function togglePlay() {
+        isPlaying = !isPlaying;
+        npPlayBtn.innerText = isPlaying ? "⏸" : "▶";
+    }
+
+    function closeNowPlaying() {
+        isPlaying = false;
+        npPlayBtn.innerText = "▶";
+        document.getElementById('view-now-playing').classList.remove('active');
+    }
+
+    function startProgress() {
+        clearInterval(musicInterval);
+        musicInterval = setInterval(() => {
+            if (isPlaying) {
+                currentPlayTime += 0.5;
+                if (currentPlayTime >= totalDuration) currentPlayTime = 0;
+                
+                let percent = (currentPlayTime / totalDuration) * 100;
+                npFill.style.width = percent + "%";
+                
+                let mins = Math.floor(currentPlayTime / 60);
+                let secs = Math.floor(currentPlayTime % 60).toString().padStart(2, '0');
+                document.getElementById('np-current').innerText = mins + ":" + secs;
+            }
+        }, 500);
+    }
+
+    // SAAT GÜNCELLEME
+    setInterval(() => {
+        const d = new Date();
+        const t = d.getHours().toString().padStart(2, '0') + ":" + d.getMinutes().toString().padStart(2, '0');
+        document.getElementById('top-time').innerText = t;
+        document.getElementById('lock-time').innerText = t;
+    }, 1000);
+
+</script>
+
+</body>
+</html>
