@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SİBER SUÇLAR - ADLİ BİLİŞİM TERMİNALİ</title>
+    <style>
+        body {
+            background-color: #050505;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 15px 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 95%;
+            max-width: 600px;
+        }
+
+        /* ANA TERMİNAL KUTUSU */
+        .terminal-box {
+            background: #000;
+            border: 1px solid #005500;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.15);
+            padding: 20px;
+            position: relative;
+        }
+
+        .terminal-box::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .header-info {
+            border-bottom: 1px dashed #00ff00;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            font-size: 13px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .header-title {
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-shadow: 0 0 5px #00ff00;
+            margin-bottom: 10px;
+            color: #0f0;
+        }
+
+        /* İPUÇLARI VE LOGLAR (İÇ İÇE) */
+        .clue-section {
+            background: #0a0a0a;
+            border: 1px dashed #444;
+            padding: 15px;
+            color: #aaa;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .clue-title {
+            color: #f55;
+            border-bottom: 1px solid #500;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .log-entry {
+            padding: 10px;
+            background: #111;
+            border-left: 2px solid #555;
+            margin-bottom: 10px;
+        }
+        
+        .log-entry span.highlight {
+            color: #fff;
+            background: #333;
+            padding: 2px 4px;
+        }
+
+        /* RÜN ÇÖZÜCÜ (DONANIM) */
+        .cryptex-container {
+            background: #111;
+            border: 1px solid #333;
+            padding: 12px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .cryptex-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            background: #050505;
+            padding: 8px;
+            border: 1px solid #222;
+            transition: all 0.2s;
+        }
+
+        .rune-box {
+            font-size: 20px;
+            color: #ffaa00;
+            width: 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .dial-window {
+            background: #000;
+            border: 1px solid #555;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #555;
+            transition: all 0.2s;
+        }
+
+        .dial-slider {
+            flex: 1;
+            accent-color: #555;
+            cursor: pointer;
+            transition: accent-color 0.2s;
+        }
+
+        .locked { border-color: #050; }
+        .locked .dial-window {
+            border-color: #0f0;
+            color: #0f0;
+            text-shadow: 0 0 8px #0f0;
+            background: #021102;
+        }
+        .locked .dial-slider { accent-color: #0f0; }
+        
+        .status-message {
+            text-align: center;
+            font-weight: bold;
+            color: #ffaa00;
+            min-height: 18px;
+            font-size: 11px;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        /* KOD BLOĞU */
+        .code-block {
+            background: #020a02;
+            border-left: 3px solid #00ff00;
+            padding: 15px;
+            font-size: 12px;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+            position: relative;
+            z-index: 3;
+            overflow-x: auto;
+        }
+
+        .comment { color: #008800; }
+        .keyword { color: #ffaa00; }
+        .string { color: #00ffff; }
+
+        .hacker-input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #00ff00;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            width: 40px;
+            text-align: center;
+            outline: none;
+            text-shadow: 0 0 5px #fff;
+        }
+        
+        .hacker-input.text-input { width: 60px; }
+        .hacker-input:focus { background: rgba(0, 255, 0, 0.1); border-bottom: 2px solid #fff; }
+
+        .btn-execute {
+            background: transparent;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            display: block;
+            width: 100%;
+            position: relative;
+            z-index: 3;
+        }
+
+        .btn-execute:hover {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 15px #00ff00;
+        }
+
+        .console-output {
+            margin-top: 15px;
+            min-height: 80px;
+            font-size: 12px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .error-msg { color: #ff3333; text-shadow: 0 0 5px #ff0000; }
+        .success-msg {
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 15px;
+            border: 1px solid #00ff00;
+            padding: 15px;
+            background: rgba(0,255,0,0.1);
+        }
+
+        .blinking-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 12px;
+            background-color: #00ff00;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        
+        .brute-force-text {
+            font-size: 24px;
+            text-align: center;
+            letter-spacing: 6px;
+            color: #fff;
+            text-shadow: 0 0 15px #00ff00;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="terminal-box">
+        
+        <div class="header-info">
+            <div class="header-title">SİBER SUÇLAR BİRİMİ - SIZMA PROTOKOLÜ</div>
+            Bürküt Başkomiserim; <strong>Asude KAYAKÇI</strong>'ya ait mobil cihazın şifreleme katmanını aşmak için sızma betiğini sisteme yükledim. Cihazın güvenlik duvarı betikteki bazı parametreleri sildi. Aşağıdaki adli bilişim loglarını ve rün kalibrasyon modülünü kullanarak eksik verileri tamamlamanız gerekmektedir. Eşleşme sağlandığında kilit çözülecektir.
+        </div>
+
+        <!-- İPUÇLARI VE LOGLAR -->
+        <div class="clue-section">
+            <div class="clue-title">SİSTEM LOGLARI & ADLİ VERİLER</div>
+            
+            <div class="log-entry">
+                <strong>VERİ 1 - ŞİFRELEME UZUNLUĞU:</strong><br>
+                Sızma betiği için gereken bit değerini (PARAM-1) bulmak adına şu matematiksel denklemi çözün:<br>
+                <span class="highlight">"Bir X sayısının yarısının 32 eksiği, 96'ya eşittir."</span>
+            </div>
+
+            <div class="log-entry">
+                <strong>VERİ 2 - AĞ PORT NUMARASI:</strong><br>
+                Cihazın ağ bağlantısı için gereken port numarası (PARAM-2), otopsi raporundaki <span class="highlight">kemik yaşının tam 8 fazlası</span> olarak yapılandırılmış.
+            </div>
+        </div>
+
+        <!-- RÜN ÇARK MODÜLÜ -->
+        <div class="cryptex-container">
+            <div class="clue-title" style="border:none; margin-bottom:0; padding-bottom:0;">FİZİKSEL ŞİFRE ÇÖZÜCÜ</div>
+            <div class="status-message" id="cryptex-status">HİZALAMA BEKLENİYOR...</div>
+            
+            <div class="cryptex-row" id="row-0">
+                <div class="rune-box">𐰢</div>
+                <input type="range" class="dial-slider" min="0" max="28" value="0" oninput="rotateDial(0, this.value)">
+                <div class="dial-window" id="win-0">A</div>
+            </div>
+            
+            <div class="cryptex-row" id="row-1">
+                <div class="rune-box">𐰀</div>
+                <input type="range" class="dial-slider" min="0" max="28" value="0" oninput="rotateDial(1, this.value)">
+                <div class="dial-window" id="win-1">A</div>
+            </div>
+
+            <div class="cryptex-row" id="row-2">
+                <div class="rune-box">𐰤</div>
+                <input type="range" class="dial-slider" min="0" max="28" value="0" oninput="rotateDial(2, this.value)">
+                <div class="dial-window" id="win-2">A</div>
+            </div>
+
+            <div class="cryptex-row" id="row-3">
+                <div class="rune-box">𐰃</div>
+                <input type="range" class="dial-slider" min="0" max="28" value="0" oninput="rotateDial(3, this.value)">
+                <div class="dial-window" id="win-3">A</div>
+            </div>
+
+            <div class="cryptex-row" id="row-4">
+                <div class="rune-box">𐰓</div>
+                <input type="range" class="dial-slider" min="0" max="28" value="0" oninput="rotateDial(4, this.value)">
+                <div class="dial-window" id="win-4">A</div>
+            </div>
+        </div>
+
+        <!-- KOD BLOĞU VE GİRİŞ ALANLARI -->
+        <div class="code-block">
+<span class="comment">// HEDEF CİHAZ: IPHONE_ASUDE_K</span>
+<span class="comment">// PROTOKOL DURUMU: PARAMETRELER BEKLENİYOR</span>
+
+<span class="keyword">function</span> <span class="string">execute_breach</span>() {
+    <span class="comment">// [PARAM-1]: Şifreleme Algoritması Bit Değeri</span>
+    <span class="keyword">let</span> enc_type = <span class="string">"AES-"</span> + <input type="text" id="val1" class="hacker-input" maxlength="3" autocomplete="off"> + <span class="string">"_CBC"</span>;
+    
+    <span class="comment">// [PARAM-2]: SSH Sızma Port Numarası</span>
+    <span class="keyword">let</span> tunnel_port = <input type="text" id="val2" class="hacker-input" maxlength="2" autocomplete="off">;
+    connect_tunnel(tunnel_port); 
+    
+    <span class="comment">// [PARAM-3]: Rün Anagramı (En Yetkili Erişim)</span>
+    <span class="keyword">let</span> privilege = <span class="string">"<input type="text" id="val3" class="hacker-input text-input" maxlength="5" autocomplete="off">"</span>; 
+    
+    System.execute(<span class="string">"grant_access "</span> + privilege);
+    System.extract(<span class="string">"lock_screen_pin"</span>);
+}
+        </div>
+
+        <button class="btn-execute" id="btn-run" onclick="triggerExploit()">PROTOKOLÜ BAŞLAT VE SIZ</button>
+
+        <div class="console-output" id="console">
+            <span class="comment">Sistem yetkili komutunu bekliyor...</span><span class="blinking-cursor"></span>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Türk Alfabesi
+    const alphabet = ['A','B','C','Ç','D','E','F','G','Ğ','H','I','İ','J','K','L','M','N','O','Ö','P','R','S','Ş','T','U','Ü','V','Y','Z'];
+    // M=15, A=0, N=16, İ=11, D=4
+    const targets = [15, 0, 16, 11, 4];
+
+    function rotateDial(rowIndex, sliderValue) {
+        const charWindow = document.getElementById(`win-${rowIndex}`);
+        const rowDiv = document.getElementById(`row-${rowIndex}`);
+        const statusMsg = document.getElementById('cryptex-status');
+        
+        charWindow.innerText = alphabet[sliderValue];
+
+        if (parseInt(sliderValue) === targets[rowIndex]) {
+            if (!rowDiv.classList.contains('locked')) {
+                rowDiv.classList.add('locked');
+                charWindow.style.transform = "scale(1.15)";
+                setTimeout(() => charWindow.style.transform = "scale(1)", 150);
+            }
+        } else {
+            rowDiv.classList.remove('locked');
+        }
+
+        const lockedRows = document.querySelectorAll('.cryptex-row.locked').length;
+        
+        if (lockedRows === 5) {
+            statusMsg.style.color = "#0f0";
+            statusMsg.style.textShadow = "0 0 10px #0f0";
+            statusMsg.innerText = "RÜNLER ÇÖZÜLDÜ! KELİMEYİ AŞAĞIYA GİRİN.";
+        } else {
+            statusMsg.style.color = "#ffaa00";
+            statusMsg.style.textShadow = "none";
+            statusMsg.innerText = "HİZALAMA BEKLENİYOR...";
+        }
+    }
+
+    const consoleOut = document.getElementById('console');
+    const btnRun = document.getElementById('btn-run');
+    let isHacking = false;
+
+    function triggerExploit() {
+        if(isHacking) return;
+        
+        const v1 = document.getElementById('val1').value.trim();
+        const v2 = document.getElementById('val2').value.trim();
+        const v3 = document.getElementById('val3').value.trim().toLowerCase();
+
+        isHacking = true;
+        btnRun.style.opacity = "0.5";
+        btnRun.innerText = "SİSTEME BAĞLANILIYOR...";
+
+        consoleOut.innerHTML = "Veri paketleri gönderiliyor...<br>";
+
+        setTimeout(() => {
+            if (v1 === "256" && v2 === "22" && (v3 === "admin" || v3 === "admın")) {
+                startBruteForce();
+            } else {
+                showError();
+            }
+        }, 800);
+    }
+
+    function showError() {
+        consoleOut.innerHTML += "Sözdizimi doğrulanıyor...<br>";
+        setTimeout(() => {
+            consoleOut.innerHTML += "<span class='error-msg'>[HATA] GÜVENLİK DUVARI BAĞLANTIYI KESTİ.</span><br>";
+            consoleOut.innerHTML += "<span class='error-msg'>Eksik veya hatalı parametre. Logları ve anagramı tekrar kontrol edin.</span><br>";
+            consoleOut.innerHTML += "<span class='comment'>Sistem yetkili komutunu bekliyor...</span><span class='blinking-cursor'></span>";
+            resetBtn();
+        }, 600);
+    }
+
+    function startBruteForce() {
+        consoleOut.innerHTML += "Doğrulama başarılı. Port 22 üzerinden tünel açıldı...<br>";
+        
+        setTimeout(() => {
+            consoleOut.innerHTML += "AES-256 şifreleme katmanı aşılıyor... ONAYLANDI.<br>";
+        }, 800);
+
+        setTimeout(() => {
+            consoleOut.innerHTML += "Yönetici (ADMIN) yetkileri alındı... ONAYLANDI.<br>";
+            consoleOut.innerHTML += "Asude KAYAKÇI'nın kilit ekranı verisi çekiliyor...<br>";
+            consoleOut.innerHTML += "Şifre kırma algoritması başlatıldı...<br><br>";
+        }, 1600);
+
+        setTimeout(() => {
+            consoleOut.innerHTML += "<div id='brute-box' class='brute-force-text'>000000</div>";
+            let bruteBox = document.getElementById('brute-box');
+            let iterations = 0;
+            
+            let interval = setInterval(() => {
+                bruteBox.innerText = Math.floor(100000 + Math.random() * 900000);
+                iterations++;
+                
+                if(iterations > 35) {
+                    clearInterval(interval);
+                    bruteBox.innerText = "121015";
+                    showSuccess();
+                }
+            }, 50);
+            
+        }, 2500);
+    }
+
+    function showSuccess() {
+        consoleOut.innerHTML += "<div class='success-msg'>CİHAZ KİLİDİ KIRILDI<br>TELEFON ŞİFRESİ: 121015</div>";
+        document.querySelectorAll('.hacker-input').forEach(input => input.disabled = true);
+        btnRun.innerText = "CİHAZA ERİŞİM SAĞLANDI";
+    }
+
+    function resetBtn() {
+        isHacking = false;
+        btnRun.style.opacity = "1";
+        btnRun.innerText = "PROTOKOLÜ BAŞLAT VE SIZ";
+    }
+</script>
+
+</body>
+</html>
