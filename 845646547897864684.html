@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kumburgaz Emniyet - Mikroskobik Analiz</title>
+    <style>
+        body {
+            background: #020202;
+            color: #d1d1d1;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 0;
+            overflow-x: hidden;
+        }
+        .container {
+            width: 95%;
+            max-width: 600px;
+            background: #080808;
+            border: 1px solid #222;
+            padding: 25px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            border-top: 3px solid #b00;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #c11;
+            margin: 0;
+            letter-spacing: 3px;
+            font-size: 20px;
+            text-transform: uppercase;
+        }
+        .desc {
+            color: #999;
+            font-size: 13px;
+            margin: 15px 0 5px 0;
+            line-height: 1.6;
+            font-style: italic;
+            background: #111;
+            padding: 12px;
+            border-left: 3px solid #c11;
+            text-align: left;
+        }
+        .lenses-area {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .lens-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 220px;
+        }
+        .lens {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: #000;
+            border: 8px solid #1a1a1a;
+            box-shadow: 
+                inset 0 0 40px rgba(0,0,0,0.9), 
+                0 0 15px rgba(0,0,0,0.5),
+                0 0 0 2px #333;
+            position: relative;
+            overflow: hidden;
+            cursor: ns-resize;
+            transition: box-shadow 0.3s;
+        }
+        /* Mercek içi nişangah */
+        .crosshair {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                linear-gradient(to right, transparent 49%, rgba(255,255,255,0.1) 49%, rgba(255,255,255,0.1) 51%, transparent 51%),
+                linear-gradient(to bottom, transparent 49%, rgba(255,255,255,0.1) 49%, rgba(255,255,255,0.1) 51%, transparent 51%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 5;
+            box-shadow: inset 0 0 30px #000;
+        }
+        .texture {
+            width: 100%;
+            height: 100%;
+            transform-origin: center;
+            transition: filter 0.1s, transform 0.1s;
+        }
+        
+        .lens-title {
+            font-size: 12px;
+            color: #aaa;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+        .lens-hint {
+            font-size: 10px;
+            color: #666;
+            margin-top: -5px;
+        }
+        
+        input[type=range] {
+            width: 80%;
+            accent-color: #900;
+            cursor: pointer;
+        }
+
+        #status-bar {
+            margin-top: 25px;
+            background: #050505;
+            padding: 15px;
+            border: 1px solid #222;
+            text-align: center;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            font-weight: bold;
+            min-height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .scanning { color: #fa0; text-shadow: 0 0 10px #fa0; animation: pulse 1s infinite; }
+        .fail { color: #f33; text-shadow: 0 0 15px #f00; font-size: 16px;}
+        .wait { color: #555; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        @keyframes scanFlash {
+            0% { filter: brightness(1) sepia(0); }
+            50% { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5); }
+            100% { filter: brightness(1) sepia(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>MİKROSKOBİK DOKU ANALİZİ</h1>
+        <p class="desc">Bürküt Başkomiserim; maktulün tırnak aralarından çıkarılan sarı iplik parçası ile şüpheli Özgür'den alınan kazak numunesini adli bilişim mikroskobuna yerleştirdim. Lütfen merceklerin altındaki kalibrasyon çubuklarıyla dokuları tam netliğe ulaştırın. İki lif yapısı da görünür kılındığında sistem lif eşleşmesini otomatik başlatacaktır.</p>
+    </div>
+
+    <div class="lenses-area">
+        <!-- NUMUNE 1 -->
+        <div class="lens-box">
+            <div class="lens-title">NUMUNE 1: Tırnaktaki Sarı İplik</div>
+            <div class="lens-hint">(Fare Tekerleği ile Odakla)</div>
+            <div class="lens" id="lens1" title="Yakınlaştırmak için fare tekerleğini kaydırın">
+                <div class="crosshair"></div>
+                <div class="texture" id="tex1">
+                    <!-- Sarı İplik Vektörel Dokusu -->
+                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <pattern id="threadPattern" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(25)">
+                                <path d="M0,10 Q20,15 40,10" stroke="#d4af37" stroke-width="4" fill="none"/>
+                                <path d="M0,20 Q20,25 40,20" stroke="#f1c40f" stroke-width="5" fill="none"/>
+                                <path d="M0,30 Q20,35 40,30" stroke="#b8860b" stroke-width="3" fill="none"/>
+                                <path d="M15,0 L20,40" stroke="#fff" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.5"/>
+                            </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#threadPattern)" />
+                    </svg>
+                </div>
+            </div>
+            <input type="range" id="slider1" min="0" max="100" value="0">
+        </div>
+
+        <!-- NUMUNE 2 -->
+        <div class="lens-box">
+            <div class="lens-title">NUMUNE 2: Özgür'ün Kazağı</div>
+            <div class="lens-hint">(Fare Tekerleği ile Odakla)</div>
+            <div class="lens" id="lens2" title="Yakınlaştırmak için fare tekerleğini kaydırın">
+                <div class="crosshair"></div>
+                <div class="texture" id="tex2">
+                    <!-- Kalın Yün Kazak Vektörel Dokusu -->
+                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <pattern id="knitPattern" width="60" height="40" patternUnits="userSpaceOnUse">
+                                <path d="M30,0 C45,20 45,30 30,40 C15,30 15,20 30,0 Z" stroke="#1f2937" stroke-width="4" fill="#374151"/>
+                                <path d="M0,20 C15,40 15,50 0,60" stroke="#1f2937" stroke-width="4" fill="none"/>
+                                <path d="M60,20 C45,40 45,50 60,60" stroke="#1f2937" stroke-width="4" fill="none"/>
+                                <circle cx="30" cy="20" r="3" fill="#111827" opacity="0.4"/>
+                            </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#knitPattern)" />
+                    </svg>
+                </div>
+            </div>
+            <input type="range" id="slider2" min="0" max="100" value="0">
+        </div>
+    </div>
+
+    <div id="status-bar"><span class="wait">SİSTEM MERCEKLERDEN GELECEK NET GÖRÜNTÜYÜ BEKLİYOR...</span></div>
+</div>
+
+<script>
+    let focus1 = 0;
+    let focus2 = 0;
+    let analysisTriggered = false;
+
+    const tex1 = document.getElementById('tex1');
+    const tex2 = document.getElementById('tex2');
+    const slider1 = document.getElementById('slider1');
+    const slider2 = document.getElementById('slider2');
+    const status = document.getElementById('status-bar');
+    const lens1 = document.getElementById('lens1');
+    const lens2 = document.getElementById('lens2');
+
+    function updateOptics() {
+        if(analysisTriggered) return;
+
+        // Odak 0 iken bulanık ve uzak. 100 iken net ve yakın.
+        const blur1 = 15 - (focus1 * 0.15);
+        const scale1 = 1 + (focus1 * 0.02);
+        tex1.style.filter = `blur(${blur1 > 0 ? blur1 : 0}px)`;
+        tex1.style.transform = `scale(${scale1})`;
+
+        const blur2 = 15 - (focus2 * 0.15);
+        const scale2 = 1 + (focus2 * 0.02);
+        tex2.style.filter = `blur(${blur2 > 0 ? blur2 : 0}px)`;
+        tex2.style.transform = `scale(${scale2})`;
+
+        slider1.value = focus1;
+        slider2.value = focus2;
+
+        if(focus1 >= 95 && focus2 >= 95) {
+            startComparison();
+        }
+    }
+
+    function startComparison() {
+        analysisTriggered = true;
+        slider1.disabled = true;
+        slider2.disabled = true;
+        
+        status.innerHTML = "<span class='scanning'>YAPAY ZEKA LİF DESENLERİNİ KARŞILAŞTIRIYOR...</span>";
+        
+        // Tarama efekti
+        tex1.style.animation = "scanFlash 1s ease-in-out";
+        tex2.style.animation = "scanFlash 1s ease-in-out";
+
+        setTimeout(() => {
+            status.innerHTML = "<span class='fail'>HATA: EŞLEŞME REDDEDİLDİ! DOKULAR FARKLI.</span>";
+            
+            // Merceklerin içini kırmızıya boyayan alarm efekti
+            lens1.style.boxShadow = "inset 0 0 50px rgba(255,0,0,0.8), 0 0 20px rgba(255,0,0,0.5)";
+            lens2.style.boxShadow = "inset 0 0 50px rgba(255,0,0,0.8), 0 0 20px rgba(255,0,0,0.5)";
+            lens1.style.borderColor = "#500";
+            lens2.style.borderColor = "#500";
+        }, 2000);
+    }
+
+    // Fare Tekerleği Kontrolleri
+    function handleWheel(e, lensNum) {
+        if(analysisTriggered) return;
+        e.preventDefault();
+        
+        // Tekerlek yönüne göre odak değerini artır/azalt
+        const change = e.deltaY > 0 ? -5 : 5;
+        
+        if(lensNum === 1) {
+            focus1 += change;
+            if(focus1 < 0) focus1 = 0;
+            if(focus1 > 100) focus1 = 100;
+        } else {
+            focus2 += change;
+            if(focus2 < 0) focus2 = 0;
+            if(focus2 > 100) focus2 = 100;
+        }
+        updateOptics();
+    }
+
+    lens1.addEventListener('wheel', (e) => handleWheel(e, 1), {passive: false});
+    lens2.addEventListener('wheel', (e) => handleWheel(e, 2), {passive: false});
+
+    // Kaydırma Çubuğu (Slider) Kontrolleri (Mobil uyumluluk için)
+    slider1.addEventListener('input', (e) => {
+        focus1 = parseInt(e.target.value);
+        updateOptics();
+    });
+    
+    slider2.addEventListener('input', (e) => {
+        focus2 = parseInt(e.target.value);
+        updateOptics();
+    });
+
+    // Başlangıç ayarları
+    updateOptics();
+</script>
+
+</body>
+</html>
