@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kumburgaz Emniyet - Optik İz Hizalama Modülü</title>
+    <style>
+        body {
+            background: #030303;
+            color: #d1d1d1;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        .container {
+            width: 95%;
+            max-width: 550px;
+            background: #0a0a0a;
+            border: 1px solid #2a2a2a;
+            padding: 20px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            border-top: 3px solid #b00;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        h1 {
+            color: #c11;
+            margin: 0;
+            letter-spacing: 2px;
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+        .desc {
+            color: #999;
+            font-size: 13px;
+            margin: 15px 0 5px 0;
+            line-height: 1.5;
+            font-style: italic;
+            background: #111;
+            padding: 12px;
+            border-left: 3px solid #c11;
+            text-align: left;
+        }
+        
+        .suspect-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .tab-btn {
+            flex: 1;
+            background: #151515;
+            color: #777;
+            border: 1px solid #333;
+            padding: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            background: #300;
+            color: #fff;
+            border-color: #f00;
+            box-shadow: inset 0 0 10px rgba(255,0,0,0.3);
+        }
+
+        .display-area {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            background: #000;
+            border: 2px solid #1a1a1a;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: linear-gradient(#111 1px, transparent 1px), linear-gradient(90deg, #111 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .shoe-layer {
+            position: absolute;
+            transition: transform 0.1s ease-out;
+        }
+
+        /* Şüpheli Ayakkabısı (Zemin) */
+        #suspect-base {
+            width: 140px;
+            height: 280px;
+            z-index: 1;
+        }
+
+        /* Kanıt Ayakkabısı (Hareketli Üst Katman) */
+        #evidence-overlay {
+            width: 140px;
+            height: 280px;
+            z-index: 2;
+            opacity: 0.7;
+            mix-blend-mode: screen;
+            filter: drop-shadow(0 0 5px rgba(255,0,0,0.8));
+        }
+
+        .sidebar {
+            background: #111;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border: 1px solid #222;
+            margin-top: 15px;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        label {
+            font-size: 11px;
+            color: #aaa;
+            font-weight: bold;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: space-between;
+        }
+        input[type=range] {
+            width: 100%;
+            accent-color: #a00;
+            cursor: pointer;
+        }
+        
+        #verify-btn {
+            padding: 15px;
+            background: #200;
+            color: #faa;
+            border: 1px solid #f00;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        #verify-btn:hover {
+            background: #d00;
+            color: #fff;
+            box-shadow: 0 0 15px #f00;
+        }
+        
+        #status-bar {
+            margin-top: 15px;
+            background: #050505;
+            padding: 15px;
+            border: 1px solid #222;
+            text-align: center;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            font-weight: bold;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.4;
+        }
+
+        .text-success { color: #0f0; text-shadow: 0 0 10px #0f0; }
+        .text-fail { color: #f33; text-shadow: 0 0 10px #f00; }
+        .text-warn { color: #fa0; text-shadow: 0 0 10px #fa0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>OPTİK İZ HİZALAMA VE KALİBRASYON MODÜLÜ</h1>
+    </div>
+
+    <div class="suspect-tabs">
+        <button class="tab-btn active" onclick="loadSuspect('ozgur')">ŞÜPHELİ 1: ÖZGÜR</button>
+        <button class="tab-btn" onclick="loadSuspect('melis')">ŞÜPHELİ 2: MELİS</button>
+        <button class="tab-btn" onclick="loadSuspect('davut')">ŞÜPHELİ 3: DAVUT</button>
+    </div>
+
+    <div class="display-area">
+        <!-- Zemin: Şüphelinin Ayakkabısı -->
+        <svg class="shoe-layer" id="suspect-base" viewBox="0 0 100 280">
+            <!-- İçerik JavaScript ile dinamik değişecek -->
+        </svg>
+
+        <!-- Üst Katman: Kanlı Referans İz (Hareket Edecek Olan) -->
+        <svg class="shoe-layer" id="evidence-overlay" viewBox="0 0 100 280">
+            <path d="M 35,10 C 15,10 10,70 15,100 C 20,130 28,150 30,170 C 32,190 22,210 22,250 C 22,280 78,280 78,250 C 78,210 68,190 70,170 C 72,150 80,130 85,100 C 90,70 85,10 65,10 Z" fill="rgba(255,0,0,0.4)" stroke="#f00" stroke-width="2"/>
+            <circle cx="50" cy="220" r="16" fill="rgba(100,0,0,0.5)" stroke="#f00" stroke-width="1"/>
+            <text x="50" y="231" font-family="Impact" font-size="32" fill="#fff" text-anchor="middle">42</text>
+        </svg>
+    </div>
+
+    <div class="sidebar">
+        <div class="control-group">
+            <label><span>YATAY HİZALAMA (X EKSENİ)</span> <span id="val-x">0</span></label>
+            <input type="range" id="slider-x" min="-80" max="80" value="0">
+        </div>
+        <div class="control-group">
+            <label><span>DİKEY HİZALAMA (Y EKSENİ)</span> <span id="val-y">0</span></label>
+            <input type="range" id="slider-y" min="-80" max="80" value="0">
+        </div>
+        <div class="control-group">
+            <label><span>AÇISAL ROTASYON (DERECE)</span> <span id="val-r">0°</span></label>
+            <input type="range" id="slider-r" min="-45" max="45" value="0">
+        </div>
+        
+        <button id="verify-btn" onclick="verifyAlignment()">ÖLÇÜMÜ DOĞRULA VE EŞLEŞTİR</button>
+    </div>
+
+    <div id="status-bar">SİSTEM HİZALAMA VERİLERİNİ BEKLİYOR...</div>
+</div>
+
+<script>
+    const evidence = document.getElementById('evidence-overlay');
+    const base = document.getElementById('suspect-base');
+    const status = document.getElementById('status-bar');
+    
+    const sliderX = document.getElementById('slider-x');
+    const sliderY = document.getElementById('slider-y');
+    const sliderR = document.getElementById('slider-r');
+
+    let currentSuspect = 'ozgur';
+    
+    // Şüphelilerin taban çizimleri ve fiziksel boyut (scale) değerleri
+    const suspectData = {
+        ozgur: {
+            scale: 0.88, // 40 numara olduğu için kanıttan gözle görülür şekilde daha küçük
+            name: "ÖZGÜR",
+            size: 40,
+            svg: `
+                <path d="M 35,10 C 15,10 10,70 15,100 C 20,130 28,150 30,170 C 32,190 22,210 22,250 C 22,280 78,280 78,250 C 78,210 68,190 70,170 C 72,150 80,130 85,100 C 90,70 85,10 65,10 Z" fill="#1a1a1a" stroke="#555" stroke-width="2"/>
+                <g fill="none" stroke="#444" stroke-width="4">
+                    <path d="M 20,40 L 80,40 M 18,60 L 82,60 M 16,80 L 84,80" />
+                    <circle cx="50" cy="220" r="15" />
+                </g>`
+        },
+        melis: {
+            scale: 1.0, // 42 numara tam eşleşiyor
+            name: "MELİS",
+            size: 42,
+            svg: `
+                <path d="M 35,10 C 15,10 10,70 15,100 C 20,130 28,150 30,170 C 32,190 22,210 22,250 C 22,280 78,280 78,250 C 78,210 68,190 70,170 C 72,150 80,130 85,100 C 90,70 85,10 65,10 Z" fill="#1a1a1a" stroke="#555" stroke-width="2"/>
+                <g fill="none" stroke="#444" stroke-width="4">
+                    <path d="M 30,30 L 70,70 M 70,30 L 30,70" />
+                    <path d="M 30,80 L 70,120 M 70,80 L 30,120" />
+                    <rect x="35" y="200" width="30" height="40" rx="5" />
+                </g>`
+        },
+        davut: {
+            scale: 1.0, // 42 numara tam eşleşiyor
+            name: "DAVUT",
+            size: 42,
+            svg: `
+                <path d="M 35,10 C 15,10 10,70 15,100 C 20,130 28,150 30,170 C 32,190 22,210 22,250 C 22,280 78,280 78,250 C 78,210 68,190 70,170 C 72,150 80,130 85,100 C 90,70 85,10 65,10 Z" fill="#1a1a1a" stroke="#555" stroke-width="2"/>
+                <g fill="none" stroke="#444" stroke-width="5" stroke-dasharray="8 4">
+                    <path d="M 20,50 Q 50,20 80,50" />
+                    <path d="M 18,80 Q 50,50 82,80" />
+                    <path d="M 15,110 Q 50,80 85,110" />
+                    <circle cx="50" cy="220" r="16" />
+                </g>`
+        }
+    };
+
+    function loadSuspect(id) {
+        currentSuspect = id;
+        
+        // Tab görünümlerini güncelle
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+
+        // Şüphelinin SVG içeriğini ve scale(boyut) değerini yükle
+        base.innerHTML = suspectData[id].svg;
+        base.style.transform = `scale(${suspectData[id].scale})`;
+
+        // Kanıt görselinin yerini bozup oyuncunun düzeltmesini iste
+        scrambleEvidence();
+        
+        status.innerHTML = "YENİ NUMUNE YÜKLENDİ. LÜTFEN KANITI NUMUNENİN ÜZERİNE HİZALAYIN.";
+    }
+
+    function scrambleEvidence() {
+        // -40 ile +40 arası rastgele bozulma
+        const randX = Math.floor(Math.random() * 80) - 40;
+        const randY = Math.floor(Math.random() * 80) - 40;
+        const randR = Math.floor(Math.random() * 40) - 20;
+
+        sliderX.value = randX;
+        sliderY.value = randY;
+        sliderR.value = randR;
+        
+        updateTransform();
+    }
+
+    function updateTransform() {
+        const x = sliderX.value;
+        const y = sliderY.value;
+        const r = sliderR.value;
+
+        document.getElementById('val-x').innerText = x;
+        document.getElementById('val-y').innerText = y;
+        document.getElementById('val-r').innerText = r + "°";
+
+        evidence.style.transform = `translate(${x}px, ${y}px) rotate(${r}deg)`;
+    }
+
+    // Slider hareketlerini dinle
+    sliderX.addEventListener('input', updateTransform);
+    sliderY.addEventListener('input', updateTransform);
+    sliderR.addEventListener('input', updateTransform);
+
+    function verifyAlignment() {
+        const x = Math.abs(parseInt(sliderX.value));
+        const y = Math.abs(parseInt(sliderY.value));
+        const r = Math.abs(parseInt(sliderR.value));
+
+        // Eğer kanıt tamamen sıfır noktasına (veya çok yakınına) getirilmediyse uyarı ver
+        if (x > 5 || y > 5 || r > 3) {
+            status.innerHTML = "<span class='text-warn'>SİSTEM UYARISI: İZLER TAM ÜST ÜSTE BİNMEDİ! DİJİTAL ÖLÇÜM İÇİN KUSURSUZ HİZALAMA GEREKLİ. LÜTFEN KIZAKLARLA OYNAMAYA DEVAM EDİN.</span>";
+            return;
+        }
+
+        // Doğru hizalandıysa şüphelinin verisine bak
+        const data = suspectData[currentSuspect];
+
+        if (data.size === 40) {
+            status.innerHTML = `<span class='text-fail'>EŞLEŞME REDDEDİLDİ! Hizalama tamamlandı. Kırmızı referans kanıt, şüphelinin tabanından dışarı taştı. ${data.name} adlı şahsın ayakkabısı 40 numaradır.</span>`;
+        } else {
+            status.innerHTML = `<span class='text-success'>EŞLEŞME BAŞARILI! Dış çeperler birebir örtüştü. ${data.name} adlı şahsın ayakkabısı, olay yerindeki 42 numaralı kanıtla fiziksel kalıp bağlamında uyumludur.</span>`;
+        }
+    }
+
+    // Başlangıç yüklemesi
+    loadSuspect('ozgur');
+    
+</script>
+
+</body>
+</html>
