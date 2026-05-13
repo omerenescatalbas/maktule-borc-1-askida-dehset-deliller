@@ -10,7 +10,7 @@
             color: #00ff00;
             font-family: 'Courier New', Courier, monospace;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -22,7 +22,7 @@
         .container {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
             width: 100%;
             max-width: 900px;
         }
@@ -31,7 +31,7 @@
             background: #050a05;
             border: 1px solid #005500;
             box-shadow: 0 0 20px rgba(0, 255, 0, 0.15);
-            padding: 25px;
+            padding: 20px;
             position: relative;
         }
 
@@ -39,10 +39,7 @@
             content: " ";
             display: block;
             position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
+            top: 0; left: 0; bottom: 0; right: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
             z-index: 1;
             background-size: 100% 2px, 3px 100%;
@@ -52,15 +49,15 @@
         .header-info {
             border-bottom: 1px dashed #00ff00;
             padding-bottom: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             line-height: 1.5;
-            font-size: 14px;
+            font-size: 13px;
             position: relative;
             z-index: 2;
         }
 
         .header-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             letter-spacing: 2px;
             text-shadow: 0 0 5px #00ff00;
@@ -76,14 +73,24 @@
             z-index: 2;
         }
 
-        .dna-slots-container {
+        .action-col {
             flex: 1.5;
-            background: #021102;
-            border: 1px solid #004400;
-            padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 15px;
+        }
+
+        .clue-col {
+            flex: 1;
+        }
+
+        .dna-slots-container {
+            background: #021102;
+            border: 1px solid #004400;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             align-items: center;
         }
 
@@ -91,22 +98,22 @@
             color: #00ff00;
             font-weight: bold;
             letter-spacing: 2px;
-            margin-bottom: 10px;
-            font-size: 18px;
+            margin-bottom: 5px;
+            font-size: 16px;
             text-align: center;
         }
 
         .slot-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             width: 100%;
             align-items: center;
         }
 
         .drop-slot {
-            width: 80%;
-            height: 50px;
+            width: 85%;
+            height: 45px;
             background: rgba(0, 50, 0, 0.2);
             border: 2px dashed #00ff00;
             display: flex;
@@ -124,7 +131,7 @@
         .drop-slot::before {
             content: "SEKANS BEKLENİYOR...";
             color: #004400;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             letter-spacing: 1px;
             position: absolute;
@@ -132,31 +139,32 @@
         }
 
         .clue-panel {
-            flex: 1;
             background: #0a0a0a;
             border: 1px dashed #555;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
+            height: 100%;
         }
 
         .clue-title {
             color: #f55;
             border-bottom: 1px solid #500;
             padding-bottom: 8px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             font-weight: bold;
             letter-spacing: 1px;
+            font-size: 14px;
         }
 
         .log-entry {
-            padding: 10px;
+            padding: 8px;
             background: #111;
             border-left: 2px solid #555;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             color: #aaa;
-            font-size: 12px;
-            line-height: 1.5;
+            font-size: 11px;
+            line-height: 1.4;
         }
         
         .log-entry span.highlight {
@@ -165,21 +173,23 @@
             padding: 1px 4px;
         }
 
-        .block-pool {
+        .block-pool-container {
             background: #050505;
             border: 1px solid #222;
             padding: 15px;
-            min-height: 120px;
+        }
+
+        .block-pool {
+            min-height: 100px;
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             justify-content: center;
             align-items: flex-start;
-            margin-top: auto;
         }
 
         .dna-block {
-            width: 140px;
+            width: 130px;
             height: 40px;
             background: #002200;
             border: 1px solid #00ff00;
@@ -194,6 +204,7 @@
             z-index: 5;
             box-shadow: inset 0 0 10px rgba(0,255,0,0.2);
             transition: transform 0.1s;
+            touch-action: none; /* Mobilde sayfayı kaydırmayı engeller */
         }
 
         .dna-block:active {
@@ -217,7 +228,7 @@
             width: 100%;
             position: relative;
             z-index: 3;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         .btn-execute:hover {
@@ -228,8 +239,8 @@
 
         .console-output {
             margin-top: 15px;
-            min-height: 60px;
-            font-size: 13px;
+            min-height: 40px;
+            font-size: 12px;
             position: relative;
             z-index: 3;
             text-align: center;
@@ -252,7 +263,7 @@
 
         .success-text {
             color: #00ff00;
-            font-size: 36px;
+            font-size: 28px;
             font-weight: bold;
             letter-spacing: 4px;
             text-shadow: 0 0 20px #00ff00;
@@ -261,28 +272,32 @@
 
         .match-name {
             color: #fff;
-            font-size: 48px;
+            font-size: 36px;
             font-weight: bold;
             letter-spacing: 6px;
             background: #00ff00;
             color: #000;
-            padding: 10px 30px;
+            padding: 10px 20px;
             box-shadow: 0 0 30px #00ff00;
             border-radius: 5px;
         }
 
         .dna-animation {
-            width: 100px;
-            height: 100px;
-            margin-bottom: 30px;
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
             background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M30 10 Q 50 50 70 90 M 70 10 Q 50 50 30 90" stroke="%2300ff00" stroke-width="4" fill="none"/><line x1="38" y1="26" x2="62" y2="26" stroke="%2300ff00" stroke-width="2"/><line x1="48" y1="46" x2="52" y2="46" stroke="%2300ff00" stroke-width="2"/><line x1="38" y1="74" x2="62" y2="74" stroke="%2300ff00" stroke-width="2"/></svg>') no-repeat center;
             animation: spin 3s linear infinite;
         }
 
         @keyframes spin { 100% { transform: rotateY(360deg); } }
 
+        /* MOBİL DÜZENLEME */
         @media (max-width: 768px) {
-            .main-workspace { flex-direction: column; }
+            .main-workspace { flex-direction: column; gap: 15px; }
+            .clue-col { order: 1; }
+            .action-col { order: 2; }
+            .drop-slot { width: 100%; }
         }
     </style>
 </head>
@@ -298,50 +313,48 @@
 
         <div class="header-info">
             <div class="header-title">ADLİ TIP - DNA REKONSTRÜKSİYONU</div>
-            Ayakkabı numunesinden elde edilen ter kalıntısı parçalanmış durumda. Verilen laboratuvar kayıtlarını kullanarak aminoasit sekanslarını doğru hizaya getirin. Blokları fareyle sürükleyip yuvalara bırakabilirsiniz. Sistem ancak kusursuz dizilimde kimlik tespiti yapabilecektir.
+            Ayakkabı numunesinden elde edilen ter kalıntısı parçalanmış durumda. Verilen laboratuvar kayıtlarını kullanarak aminoasit sekanslarını doğru hizaya getirin. Blokları fareyle/parmakla sürükleyip yuvalara bırakabilirsiniz.
         </div>
 
         <div class="main-workspace">
-            <div class="dna-slots-container">
-                <div class="slot-title">HEDEF ZİNCİR</div>
-                <div class="slot-wrapper">
-                    <div class="drop-slot" id="slot-1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" data-expected="block-A"></div>
-                    <div class="drop-slot" id="slot-2" ondrop="drop(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" data-expected="block-B"></div>
-                    <div class="drop-slot" id="slot-3" ondrop="drop(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" data-expected="block-C"></div>
-                    <div class="drop-slot" id="slot-4" ondrop="drop(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" data-expected="block-D"></div>
-                    <div class="drop-slot" id="slot-5" ondrop="drop(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" data-expected="block-E"></div>
+            
+            <!-- Notlar Mobilde En Üstte Çıkar -->
+            <div class="clue-col">
+                <div class="clue-panel">
+                    <div class="clue-title">LABORATUVAR NOTLARI</div>
+                    <div class="log-entry"><strong>BULGU 1:</strong> Sarmalın en başı ve en sonu <span class="highlight">Guanin (G)</span> nükleotidi ile başlamaktadır.</div>
+                    <div class="log-entry"><strong>BULGU 2:</strong> Çift Sitozin <span class="highlight">(C-C)</span> barındıran zincir parçası, sistemin tam kalbinde, yani üçüncü sırada yer almaktadır.</div>
+                    <div class="log-entry"><strong>BULGU 3:</strong> Çift Adenin <span class="highlight">(A-A)</span> taşıyan sekans, merkezdeki parçanın hemen soluna tutunmuştur.</div>
+                    <div class="log-entry"><strong>BULGU 4:</strong> Timin <span class="highlight">(T)</span> ile başlayan aminoasit bloğu, merkez diziliminin hemen sağına yerleşmektedir.</div>
+                    <div class="log-entry"><strong>BULGU 5:</strong> İlk sıradaki genetik halkanın ikinci nükleotidi <span class="highlight">Sitozin (C)</span> yapısındadır.</div>
                 </div>
             </div>
 
-            <div class="clue-panel">
-                <div class="clue-title">LABORATUVAR NOTLARI</div>
-                
-                <div class="log-entry">
-                    <strong>BULGU 1:</strong> Sarmalın en başı ve en sonu <span class="highlight">Guanin (G)</span> nükleotidi ile başlamaktadır.
-                </div>
-                <div class="log-entry">
-                    <strong>BULGU 2:</strong> Çift Sitozin <span class="highlight">(C-C)</span> barındıran zincir parçası, sistemin tam kalbinde, yani üçüncü sırada yer almaktadır.
-                </div>
-                <div class="log-entry">
-                    <strong>BULGU 3:</strong> Çift Adenin <span class="highlight">(A-A)</span> taşıyan sekans, merkezdeki parçanın hemen soluna tutunmuştur.
-                </div>
-                <div class="log-entry">
-                    <strong>BULGU 4:</strong> Timin <span class="highlight">(T)</span> ile başlayan aminoasit bloğu, merkez diziliminin hemen sağına yerleşmektedir.
-                </div>
-                <div class="log-entry">
-                    <strong>BULGU 5:</strong> İlk sıradaki genetik halkanın ikinci nükleotidi <span class="highlight">Sitozin (C)</span> yapısındadır.
+            <!-- Yuvalar ve Havuz Alt Alta Sırada -->
+            <div class="action-col">
+                <div class="dna-slots-container">
+                    <div class="slot-title">HEDEF ZİNCİR</div>
+                    <div class="slot-wrapper">
+                        <div class="drop-slot" id="slot-1" data-expected="block-A"></div>
+                        <div class="drop-slot" id="slot-2" data-expected="block-B"></div>
+                        <div class="drop-slot" id="slot-3" data-expected="block-C"></div>
+                        <div class="drop-slot" id="slot-4" data-expected="block-D"></div>
+                        <div class="drop-slot" id="slot-5" data-expected="block-E"></div>
+                    </div>
                 </div>
 
-                <div class="clue-title" style="margin-top: 15px;">KULLANILABİLİR BLOKLAR</div>
-                <div class="block-pool" id="block-pool" ondrop="drop(event)" ondragover="allowDrop(event)">
-                    <!-- Karışık Bloklar -->
-                    <div class="dna-block" id="block-D" draggable="true" ondragstart="drag(event)">[T-A-C-C]</div>
-                    <div class="dna-block" id="block-A" draggable="true" ondragstart="drag(event)">[G-C-T-A]</div>
-                    <div class="dna-block" id="block-E" draggable="true" ondragstart="drag(event)">[G-G-A-T]</div>
-                    <div class="dna-block" id="block-B" draggable="true" ondragstart="drag(event)">[A-A-T-G]</div>
-                    <div class="dna-block" id="block-C" draggable="true" ondragstart="drag(event)">[C-C-G-T]</div>
+                <div class="block-pool-container">
+                    <div class="clue-title" style="margin-bottom: 10px; border:none;">KULLANILABİLİR BLOKLAR</div>
+                    <div class="block-pool" id="block-pool">
+                        <div class="dna-block" id="block-D" draggable="true">[T-A-C-C]</div>
+                        <div class="dna-block" id="block-A" draggable="true">[G-C-T-A]</div>
+                        <div class="dna-block" id="block-E" draggable="true">[G-G-A-T]</div>
+                        <div class="dna-block" id="block-B" draggable="true">[A-A-T-G]</div>
+                        <div class="dna-block" id="block-C" draggable="true">[C-C-G-T]</div>
+                    </div>
                 </div>
             </div>
+
         </div>
 
         <button class="btn-execute" onclick="verifyDNA()">DİZİLİMİ ANALİZ ET</button>
@@ -351,54 +364,122 @@
 </div>
 
 <script>
-    function allowDrop(ev) {
-        ev.preventDefault();
-    }
+    const blocks = document.querySelectorAll('.dna-block');
+    const slots = document.querySelectorAll('.drop-slot');
+    const pool = document.getElementById('block-pool');
 
-    function dragEnter(ev) {
-        ev.preventDefault();
-        if (ev.target.classList.contains('drop-slot')) {
-            ev.target.classList.add('hover-active');
-        }
-    }
+    // MASAÜSTÜ (DRAG & DROP) OLAYLARI
+    blocks.forEach(block => {
+        block.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData("text", e.target.id);
+        });
+    });
 
-    function dragLeave(ev) {
-        if (ev.target.classList.contains('drop-slot')) {
-            ev.target.classList.remove('hover-active');
-        }
-    }
-
-    function drag(ev) {
-        ev.dataTransfer.setData("text", ev.target.id);
-    }
-
-    function drop(ev) {
-        ev.preventDefault();
-        
-        if (ev.target.classList.contains('drop-slot')) {
-            ev.target.classList.remove('hover-active');
-        }
-
-        let data = ev.dataTransfer.getData("text");
-        let draggedElement = document.getElementById(data);
-        
-        // Sadece boş yuvalara veya havuza bırakmaya izin ver
-        if (ev.target.classList.contains('drop-slot')) {
-            if (ev.target.children.length > 0) {
-                // Yuvada zaten eleman varsa, mevcut elemanı havuza geri gönder
-                document.getElementById('block-pool').appendChild(ev.target.children[0]);
+    slots.forEach(slot => {
+        slot.addEventListener('dragover', (e) => e.preventDefault());
+        slot.addEventListener('dragenter', (e) => e.target.classList.add('hover-active'));
+        slot.addEventListener('dragleave', (e) => e.target.classList.remove('hover-active'));
+        slot.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.target.classList.remove('hover-active');
+            const data = e.dataTransfer.getData("text");
+            const element = document.getElementById(data);
+            if (e.target.children.length > 0) {
+                pool.appendChild(e.target.children[0]);
             }
-            ev.target.appendChild(draggedElement);
-        } else if (ev.target.id === 'block-pool') {
-            ev.target.appendChild(draggedElement);
-        } else if (ev.target.classList.contains('block-pool')) {
-            ev.target.appendChild(draggedElement);
-        }
+            e.target.appendChild(element);
+        });
+    });
+
+    pool.addEventListener('dragover', (e) => e.preventDefault());
+    pool.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const data = e.dataTransfer.getData("text");
+        pool.appendChild(document.getElementById(data));
+    });
+
+    // MOBİL (TOUCH) OLAYLARI
+    let draggedItem = null;
+    let offsetX = 0;
+    let offsetY = 0;
+    let originalParent = null;
+
+    blocks.forEach(block => {
+        block.addEventListener('touchstart', handleTouchStart, {passive: false});
+        block.addEventListener('touchmove', handleTouchMove, {passive: false});
+        block.addEventListener('touchend', handleTouchEnd);
+    });
+
+    function handleTouchStart(e) {
+        draggedItem = e.target;
+        originalParent = draggedItem.parentNode;
+        const touch = e.touches[0];
+        const rect = draggedItem.getBoundingClientRect();
+        
+        offsetX = touch.clientX - rect.left;
+        offsetY = touch.clientY - rect.top;
+
+        draggedItem.style.position = 'fixed';
+        draggedItem.style.zIndex = '1000';
+        draggedItem.style.left = (touch.clientX - offsetX) + 'px';
+        draggedItem.style.top = (touch.clientY - offsetY) + 'px';
+        draggedItem.style.width = rect.width + 'px';
+        draggedItem.style.margin = '0';
+        
+        // ElementFromPoint'in alttaki yuvayı görebilmesi için pointer event'i kapatıyoruz
+        draggedItem.style.pointerEvents = 'none'; 
     }
 
+    function handleTouchMove(e) {
+        if (!draggedItem) return;
+        e.preventDefault(); // Sayfa kaymasını engeller
+        const touch = e.touches[0];
+        draggedItem.style.left = (touch.clientX - offsetX) + 'px';
+        draggedItem.style.top = (touch.clientY - offsetY) + 'px';
+    }
+
+    function handleTouchEnd(e) {
+        if (!draggedItem) return;
+        const touch = e.changedTouches[0];
+
+        // Parmağın bırakıldığı koordinattaki elementi bul
+        let dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+
+        // Orijinal stilleri geri yükle
+        draggedItem.style.position = '';
+        draggedItem.style.zIndex = '5';
+        draggedItem.style.left = '';
+        draggedItem.style.top = '';
+        draggedItem.style.width = '130px';
+        draggedItem.style.pointerEvents = 'auto';
+
+        if (dropTarget) {
+            let slot = dropTarget.closest('.drop-slot');
+            let poolTarget = dropTarget.closest('.block-pool-container');
+
+            if (slot) {
+                // Yuvada blok varsa havuza yolla
+                if (slot.children.length > 0) {
+                    pool.appendChild(slot.children[0]);
+                }
+                slot.appendChild(draggedItem);
+                slot.classList.remove('hover-active');
+            } else if (poolTarget) {
+                pool.appendChild(draggedItem);
+            } else {
+                originalParent.appendChild(draggedItem);
+            }
+        } else {
+            originalParent.appendChild(draggedItem);
+        }
+
+        draggedItem = null;
+    }
+
+    // DOĞRULAMA
     function verifyDNA() {
         const consoleOut = document.getElementById('console');
-        const slots = [
+        const slotElements = [
             document.getElementById('slot-1'),
             document.getElementById('slot-2'),
             document.getElementById('slot-3'),
@@ -409,12 +490,12 @@
         let isComplete = true;
         let isCorrect = true;
 
-        for (let i = 0; i < slots.length; i++) {
-            if (slots[i].children.length === 0) {
+        for (let i = 0; i < slotElements.length; i++) {
+            if (slotElements[i].children.length === 0) {
                 isComplete = false;
                 break;
             }
-            if (slots[i].children[0].id !== slots[i].getAttribute('data-expected')) {
+            if (slotElements[i].children[0].id !== slotElements[i].getAttribute('data-expected')) {
                 isCorrect = false;
             }
         }
